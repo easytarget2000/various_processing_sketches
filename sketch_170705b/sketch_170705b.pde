@@ -4,7 +4,7 @@
 
 private static final int NUM_OF_STARS = 128 * 10;
 
-private static final int MIN_ALPHA = 64;
+private static final int MIN_ALPHA = 160;
 
 private static final int MAX_ALPHA = 255;
 
@@ -16,13 +16,17 @@ private ArrayList<Star> stars = new ArrayList<Star>();
 
 private int nextBeatMillis = 0;
 
-private float bpm = 86.4;
+private float bpm = 90;
 
 private int beatIntervalMillis;
 
 private float originX;
 
 private float originY;
+
+private float coverYOffset = 0f;
+
+private float coverMaxY;
 
 /**
  * Lifecycle
@@ -36,6 +40,8 @@ void setup() {
   println(beatIntervalMillis + " xss");
   setStarOriginCoordinates();
   addStars();
+
+  setCoverSize();
 
   setRandomColor();
   background(0);
@@ -54,7 +60,29 @@ void draw() {
     }
   }
 
+  drawCover();
+
   //println("DEBUG: Number of stars: " + stars.size());
+}
+
+private void drawCover() {
+
+  if (coverYOffset > coverMaxY) {
+    return;
+  }
+
+  coverYOffset += 111f;
+
+  noStroke();
+  fill(0xFF000000);
+  rect(0f, coverMaxY - coverYOffset, 100f, 100f);
+  rect(20f, 20f, 20f, 20f);
+  rect(0f, coverMaxY + coverYOffset, width, coverMaxY + coverYOffset);
+}
+
+private void setCoverSize() {
+  coverMaxY = height / 2f;
+  coverYOffset = 0f;
 }
 
 private void handleBeat() {
@@ -64,7 +92,7 @@ private void handleBeat() {
   }
 
   //if (((int) random(2f)) % 2 == 0) {
-    addStars();
+  addStars();
   //}
 
   setRandomColor();
@@ -76,15 +104,17 @@ private void addStars() {
   if ((int) random(16f) % 16 == 0) {
     setStarOriginCoordinates();
   }
-  
+
   for (int i = 0; i < NUM_OF_STARS; i++) {
     stars.add(new Star(originX, originY));
   }
 }
 
 private void setStarOriginCoordinates() {
-  originX = width / 2f;random(width);
-  originY = height / 2f; random(height);
+  originX = width / 2f;
+  random(width);
+  originY = height / 2f; 
+  random(height);
 }
 
 private void setRandomColor() {

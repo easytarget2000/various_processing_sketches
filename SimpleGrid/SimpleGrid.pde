@@ -22,9 +22,9 @@ void draw() {
   background(0);
 
   noFill();
-  stroke(0xFFAAFFAA);
+  stroke(0xFFFFFFFF);
   
-  final float numOfVerticalLines = 128f;
+  final float numOfVerticalLines = 48f;
   final float squareWidth = width / numOfVerticalLines;
 
   for (float x = 0f; x <= width; x += squareWidth) {
@@ -36,7 +36,7 @@ void draw() {
     line(0f, y, width, y);
   }
   
-  noStroke();
-  fill(0xFF000000);
-  ellipse(width / 2f, height / 2f, width * 0.2f, height * 0.6f);
+  //noStroke();
+  //fill(0xFF000000);
+  //ellipse(width / 2f, height / 2f, width * 0.2f, height * 0.6f);
 }
