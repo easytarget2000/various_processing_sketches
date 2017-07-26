@@ -8,9 +8,26 @@ private static final int MAX_NUM_OF_RINGS = 32;
 
 private static final int MAX_VERTICES_PER_RING = 512;
 
+private static final int X_AXIS = 2;
+
+private static final int Y_AXIS = 1;
+
+private static final color[] BG_COLORS = {
+  0xFFEA3556, 
+  0xFF12ECA8, 
+  0xFFE3F612, 
+  0xFF2D4E60, 
+  0xFFFFA401
+};
+
+
 /**
  * Values
  */
+
+private Conductor conductor;
+
+private float outerRingRadius;
 
 private int numOfRings;
 
@@ -18,36 +35,40 @@ private boolean clearBackground;
 
 private boolean drawNothing;
 
+private color backgroundColor;
+
 /**
  * Lifecycle
  */
 
 void setup() {
-  //size(1920, 1080);
-   fullScreen();
+  size(1920, 1080);
+  //fullScreen();
   // fullScreen(2);
   background(0);
 
   numOfRings = MAX_NUM_OF_RINGS / 2;
   setRandomClearBackground();
   drawNothing = false;
-
+  outerRingRadius = height * 0.33f;
   noFill();
   setColor();
+  
+  conductor = new Conductor(128f);
+
+  background(0xFF000000);
 }
 
 void draw() {
-
+  
   if (drawNothing) {
-    background(0);
     return;
   }
 
-  if (clearBackground) {
-    background(0);
+  if (conductor.isBeatDue(2)) {
+    backgroundColor = getRandomBackgroundColor();
+    background(backgroundColor);
   }
-
-  final float maxRadius = height / 2f;
 
   float[] xOffsets = new float[MAX_VERTICES_PER_RING];
   float[] yOffsets = new float[MAX_VERTICES_PER_RING];
@@ -59,7 +80,7 @@ void draw() {
   for (int ringCounter = 0; ringCounter < numOfRings; ringCounter++) {
     final float sizeFactor = (ringCounter + 1f) / numOfRings;
     final int numOfVertices = (int) (sizeFactor * MAX_VERTICES_PER_RING);
-    final float radius = sizeFactor * maxRadius;
+    final float radius = sizeFactor * outerRingRadius;
     final float firstX = (width / 2f) + radius + xOffsets[0];
     final float firstY = (height / 2f) + yOffsets[0];
     float lastX = firstX;
@@ -114,6 +135,10 @@ void keyReleased() {
   }
 }
 
+private void drawBackground() {
+  background(backgroundColor);
+}
+
 private void setNumOfRings() {
   if (random(1f) > 0.5f) {
     numOfRings *= 1.3f;
@@ -164,14 +189,16 @@ private float getBrightness() {
 }
 
 private color getRandomColor() {
-  if (millis() % 10 != 0) {
-    final int brightness = 100 + (int) random(155);
-    return color(
-      brightness, 
-      brightness, 
-      brightness, 
-      clearBackground ? 255 : 32
-      );
+  if (random(1f) > 0.1f) {
+    return (0xFFFFFFFF);
+    //final int brightness = 100 + (int) random(155);
+
+    //return color(
+    //  brightness, 
+    //  brightness, 
+    //  brightness, 
+    //  clearBackground ? 255 : 32
+    //  );
   } else {
     return color(
       (int) 50 + random(200), 
@@ -179,5 +206,30 @@ private color getRandomColor() {
       (int) 50 + random(200), 
       clearBackground ? 255 : 32
       );
+  }
+}
+
+private color getRandomBackgroundColor() {
+  return BG_COLORS[(int) random(BG_COLORS.length)];
+}
+
+void setGradient(int x, int y, float w, float h, color c1, color c2, int axis ) {
+
+  noFill();
+
+  if (axis == Y_AXIS) {  // Top to bottom gradient
+    for (int i = y; i <= y+h; i += 8) {
+      float inter = map(i, y, y+h, 0, 1);
+      color c = lerpColor(c1, c2, inter);
+      stroke(c);
+      line(x, i, x+w, i);
+    }
+  } else if (axis == X_AXIS) {  // Left to right gradient
+    for (int i = x; i <= x+w; i++) {
+      float inter = map(i, x, x+w, 0, 1);
+      color c = lerpColor(c1, c2, inter);
+      stroke(c);
+      line(i, y, i, y+h);
+    }
   }
 }

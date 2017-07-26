@@ -18,14 +18,6 @@ private static final int MAX_ALPHA = 128;
 
 private Point[] points;
 
-private int nextBeatMillis = 0;
-
-private float bpm = 64f;
-
-private int beatIntervalMillis;
-
-private boolean doHandleBeats = true;
-
 private int pointsPerLine;
 
 /**
