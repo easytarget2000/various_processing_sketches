@@ -69,7 +69,7 @@ public class Conductor {
 
   public boolean isBeatDue(final int beatMultiplier) {
     final int count = getBeatCount(beatMultiplier);
-    println(TAG + ": isBeatDue(" + beatMultiplier + "): count: " + count);
+    //println(TAG + ": isBeatDue(" + beatMultiplier + "): count: " + count);
     if (count != acknowledgedBeatCount[beatMultiplier - 1]) {
       acknowledgedBeatCount[beatMultiplier - 1] = count;
       return true;

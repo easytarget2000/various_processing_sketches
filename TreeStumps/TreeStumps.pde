@@ -17,7 +17,8 @@ private static final color[] BG_COLORS = {
   0xFF12ECA8, 
   0xFFE3F612, 
   0xFF2D4E60, 
-  0xFFFFA401
+  0xFFFFA401, 
+  0xFF000000
 };
 
 
@@ -35,38 +36,45 @@ private boolean clearBackground;
 
 private boolean drawNothing;
 
-private color backgroundColor;
+private color backgroundColor = 0xFF333333;
+
+private boolean allowStyleChanges;
 
 /**
  * Lifecycle
  */
 
 void setup() {
-  size(1920, 1080);
+  //size(1920, 1080);
   //fullScreen();
-  // fullScreen(2);
+   fullScreen(1);
   background(0);
 
   numOfRings = MAX_NUM_OF_RINGS / 2;
   setRandomClearBackground();
   drawNothing = false;
-  outerRingRadius = height * 0.33f;
+  resetOuterRingRadius();
+  allowStyleChanges = true;
   noFill();
   setColor();
-  
-  conductor = new Conductor(128f);
+
+  conductor = new Conductor(119f);
 
   background(0xFF000000);
 }
 
 void draw() {
-  
+
   if (drawNothing) {
+    background(0);
     return;
   }
 
-  if (conductor.isBeatDue(2)) {
-    backgroundColor = getRandomBackgroundColor();
+  if (allowStyleChanges && conductor.isBeatDue(2) && random(1f) > 0.75f) {
+    setRandomBackgroundColor();
+  }
+
+  if (clearBackground) {
     background(backgroundColor);
   }
 
@@ -102,12 +110,15 @@ void draw() {
     line(lastX, lastY, firstX, firstY);
   }
 
-  if (millis() % 4 == 0) {
-    setNumOfRings();
-  } else if (millis() % 22 == 0) {
-    setColor();
-  } else if (millis() % 53 == 0) {
-    setRandomClearBackground();
+  if (allowStyleChanges && random(1f) > 0.5f) {
+
+    if (conductor.isBeatDue(1) && random(1f) > 0.5f) {
+      setNumOfRings();
+    } else if (conductor.isBeatDue(1) && random(1f) > 0.9f) {
+      setColor();
+    } else if (conductor.isBeatDue(4)) {
+      setRandomClearBackground();
+    }
   }
 }
 
@@ -116,11 +127,22 @@ void keyPressed() {
   println("main: keyPressed(): key: " + (int) key);
 
   switch (key) {
+  case 'h':
+    allowStyleChanges = false;
+    break;
   case 's':
     setClearBackground(!clearBackground);
     break;
+  case 'c':
+    setColor();
+    setRandomBackgroundColor();
+    break;
   case 'b':
     drawNothing = true;
+    break;
+  case 'q':
+    increaseOuterRingRadius();
+    break;
   }
 }
 
@@ -129,10 +151,24 @@ void keyReleased() {
   println("main: keyReleased(): key: " + (int) key);
 
   switch (key) {
+  case 'h': 
+    allowStyleChanges = true;
+    break;
   case 'b':
+    backgroundColor = 0xFF000000;
     drawNothing = false;
     break;
+  case 'q':
+    resetOuterRingRadius();
   }
+}
+
+private void resetOuterRingRadius() {
+  outerRingRadius = height * 0.37f;
+}
+
+private void increaseOuterRingRadius() {
+  outerRingRadius *= 1.3f;
 }
 
 private void drawBackground() {
@@ -209,8 +245,8 @@ private color getRandomColor() {
   }
 }
 
-private color getRandomBackgroundColor() {
-  return BG_COLORS[(int) random(BG_COLORS.length)];
+private void setRandomBackgroundColor() {
+  backgroundColor = BG_COLORS[(int) random(BG_COLORS.length)];
 }
 
 void setGradient(int x, int y, float w, float h, color c1, color c2, int axis ) {
