@@ -47,7 +47,7 @@ private boolean allowStyleChanges;
 void setup() {
   //size(1920, 1080);
   //fullScreen();
-   fullScreen(1);
+  fullScreen(1);
   background(0);
 
   numOfRings = MAX_NUM_OF_RINGS / 2;
@@ -58,7 +58,7 @@ void setup() {
   noFill();
   setColor();
 
-  conductor = new Conductor(119f);
+  conductor = new Conductor(109f);
 
   background(0xFF000000);
 }
@@ -70,7 +70,7 @@ void draw() {
     return;
   }
 
-  if (allowStyleChanges && conductor.isBeatDue(2) && random(1f) > 0.75f) {
+  if (allowStyleChanges && conductor.isBeatDue(2) && random(1f) > 0.2f) {
     setRandomBackgroundColor();
   }
 
@@ -112,11 +112,15 @@ void draw() {
 
   if (allowStyleChanges && random(1f) > 0.5f) {
 
-    if (conductor.isBeatDue(1) && random(1f) > 0.5f) {
+    if (conductor.isBeatDue(1) && random(1f) > 0.2f) {
       setNumOfRings();
-    } else if (conductor.isBeatDue(1) && random(1f) > 0.9f) {
+    }
+    
+    if (conductor.isBeatDue(1) && random(1f) > 0.1f) {
       setColor();
-    } else if (conductor.isBeatDue(4)) {
+    }
+    
+    if (conductor.isBeatDue(4)) {
       setRandomClearBackground();
     }
   }
@@ -143,6 +147,8 @@ void keyPressed() {
   case 'q':
     increaseOuterRingRadius();
     break;
+  case ' ':
+    conductor.tap();
   }
 }
 

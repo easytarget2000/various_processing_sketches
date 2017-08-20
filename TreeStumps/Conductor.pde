@@ -10,23 +10,16 @@ public class Conductor {
    * Values
    */
 
-  private float bpm = 64f;
+  private float bpm = 140f;
 
   private int sixteenthIntervalMillis;
-
-  private int nextSixteenthBeatMillis;
-
-  private int nextEigthBeatMillis;
-
-  private int nextQuarterBeatMillis;
-
-  private int nextHalfBarMillis;
-
-  private int nextBarMillis;
-
+  
   private int startMillis;
 
   private int[] acknowledgedBeatCount;
+  
+  private int lastTapMillis = 0;
+  
   /**
    * Constructor
    */
@@ -41,18 +34,21 @@ public class Conductor {
 
   public void setBpm(final float bpm) {
     this.bpm = bpm;
-
-    resetTimer();
-
-    sixteenthIntervalMillis = (int) ((60f / this.bpm) * 1000f) / 4;
-    final int millis = millis();
-    nextSixteenthBeatMillis = millis + sixteenthIntervalMillis;
-
-    acknowledgedBeatCount = new int[] {0, 0, 0, 0};
+    setSixteenthIntervalMillis((int) ((60f / this.bpm) * 1000f) / 4);
   }
 
   public float getBpm() {
     return bpm;
+  }
+  
+  private void setSixteenthIntervalMillis(final int interval) {
+    resetTimer();
+
+    sixteenthIntervalMillis = interval;
+    acknowledgedBeatCount = new int[] {0, 0, 0, 0};
+    
+    final float bpm = (60f / sixteenthIntervalMillis) * 1000f;
+    println("DEBUG: Conductor:  setSixteenthIntervalMillis(" + sixteenthIntervalMillis + " ms): " + bpm + " BPM");
   }
 
   /**
@@ -77,4 +73,17 @@ public class Conductor {
       return false;
     }
   }
+  
+  public void tap() {
+    final int millisSinceLastTap = millis() - lastTapMillis;
+    if (millisSinceLastTap > 1000) {
+      lastTapMillis = millis();
+      return;
+    }
+    
+    lastTapMillis = millis();
+    final int newInterval = (sixteenthIntervalMillis + millisSinceLastTap) / 2;
+    setSixteenthIntervalMillis(newInterval);
+  }
+  
 }
