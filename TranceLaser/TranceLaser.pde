@@ -2,10 +2,10 @@
 * Constants
  */
 
-private static final int NUM_OF_COLUMNS = 6;
+private static final int NUM_OF_COLUMNS = 3;
 
 private static final int[] COLORS = {
-  0xFFFFFFFF, 0xFF0000FF
+  0x30D66927, 0x30FF00FF, 0x30FFFFFF
 };
 
 /*
@@ -31,10 +31,12 @@ void setup() {
   circleDistance = (width / (float) (NUM_OF_COLUMNS * 0.67));
   circleRadius = circleDistance * 0.67f;
   maxJitterDistance = circleDistance / 30f;
+  
+  background(0);
 }
 
 void draw() {
-  background(0);
+  //background(0);
   drawCircles();
 }
 
@@ -49,8 +51,8 @@ private void drawCircles() {
 }
 
 private void drawCircles(final float column, final float row) {
-  final float x = (column * circleDistance);
-  final float y = (row * circleDistance) + (circleDistance * sin(100f / (millis() % 2000)));
+  final float startX = (column * circleDistance);
+  final float startY = (row * circleDistance) + (circleDistance * sin(100f / (millis() % 2000)));
   for (int i = 0; i < COLORS.length; i++) {
     //fill(COLORS[i]);
     //ellipse(
@@ -63,18 +65,16 @@ private void drawCircles(final float column, final float row) {
     //  );
 
     stroke(COLORS[i]);
+    final float x = startX + cos(i * millis() * 0.001) * circleDistance;
+    final float y = startY + sin((COLORS.length - i) * millis() * 0.001)* circleDistance;
     line(
-      x + cos(i * millis() * 0.001) * circleDistance, 
-      y + sin((COLORS.length - i) * millis() * 0.001)* circleDistance, 
+      x, 
+      y, 
       width /2f, 
       height / 2f
       );
-      //line(
-      //0, 
-      //y, 
-      //width, 
-      //y
-      //);
+      
+      
   }
 }
 

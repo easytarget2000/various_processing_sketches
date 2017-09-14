@@ -37,25 +37,31 @@ void draw() {
   //background(0);
 
   addDrops();
-  updateAndDrawDrops();
-
+  //for (int i = 0; i < 2; i++) {
+    updateAndDrawDrops();
+  //}
+  
   if (mousePressed) {
     addObstacleCluster(mouseX, mouseY);
   }
 
-  if (random(1f) < 0.001f) {
+  if (random(1f) < 0.005f) {
     background(0);
     drops = new ArrayList<Drop>();
+  }
+
+  if (random(1f) < 0.01f) {
+    configurePaint();
   }
 }
 
 private void configurePaint() {
   noFill();
-  stroke(0x30FFFFFF);
+  stroke(getRandomColorWithAlpha(64));
 }
 
 private void addObstacleCluster(final float centerX, final float centerY) {
-  final float clusterRadius = (width / 32f) * (1f + random(1f));
+  final float clusterRadius = (width / 64f) * (1f + random(1f));
   final int numberOfObstacles = 32; 
   final float xStepSize = clusterRadius * 2f / numberOfObstacles;
 
@@ -71,7 +77,7 @@ private void addObstacleCluster(final float centerX, final float centerY) {
 private void addDrops() {
   for (int i = drops.size(); i < width * 2; i++) {
     drops.add(
-      new Drop(random(width), -(height / 2f) + random(height), 0.5f + random(4f))
+      new Drop(random(width), -(height / 16f) + random(height), 0.5f + random(16f))
       );
   }
 }
@@ -93,6 +99,15 @@ private void updateAndDrawDrops() {
 private void drawObstacles() {
   for (final Obstacle obstacle : obstacles) {
   }
+}
+
+private color getRandomColorWithAlpha(final int alpha) {
+  return color(
+    (int) random(100) + 155, 
+    (int) random(100) + 155, 
+    (int) random(100) + 155, 
+    alpha
+    );
 }
 
 /**
