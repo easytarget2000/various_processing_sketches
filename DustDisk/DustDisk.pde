@@ -13,8 +13,8 @@ private float t = 0f;
  */
 
 void setup() {
-  size(1920, 1080);
-  // fullScreen();
+  //size(1080, 1080);
+   fullScreen();
   // fullScreen(2);
   background(0);
   noFill();
@@ -30,8 +30,8 @@ void draw() {
   for (float radius = 0; radius < 512f; radius += 0.1f) {
     final float a = t + radius / 8f; 
     ellipse(
-      width / 2f + (radius / 2f * cos(a + t)) + (radius / 3f * cos(2 * a+ 0.1)) + random(2f), 
-      height / 2f + (radius / 2f * sin(a + t)) + (radius / 3f* sin(2 * a + 0.2)) + random(2f), 
+      width / 2f + (radius / 2f * cos(a + t)) + (radius / 3f * cos(2 * a+ 0.1)) + random(4f), 
+      height / 2f + (radius / 2f * sin(a + t)) + (radius / 3f* sin(2 * a + 0.2)) + random(5f), 
       2f, 
       2f
       );
@@ -41,7 +41,20 @@ void draw() {
     if (random(1f) < 0.5f) {
       stroke(0x10FFFFFF);
     } else {
-      stroke(0x10000000);
+      if (random(1f) < 0.5f) {
+        stroke(0x10000000);
+      } else {
+        stroke(getRandomColorWithAlpha(0x30));
+      }
     }
   }
+}
+
+private color getRandomColorWithAlpha(final int alpha) {
+  return color(
+    (int) random(100) + 155, 
+    (int) random(100) + 155, 
+    (int) random(100) + 155, 
+    alpha
+    );
 }

@@ -79,7 +79,7 @@ void draw_() {
 
   final boolean clear = random(1f) > 0.7f; 
   if (clear) {
-    background(0);zzzz`zzz
+    background(0);
   }
 
   push();
@@ -97,7 +97,7 @@ void draw_() {
     push();
     rotateY(QUARTER_PI*sin(TWO_PI*t - .75*PI*i/numOfBoxes));
     box(128 + 32 * i);
-    final float radius = 256f + 32f * i;
+    //final float radius = 256f + 32f * i;
     //ellipse(0f, 0f, radius, radius);
     pop();
   }
