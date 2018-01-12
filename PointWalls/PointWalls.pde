@@ -26,7 +26,8 @@ private float yRotationSpeed = 0.1f;
 
 void setup() {
   //size(1920, 1080);
-  fullScreen(P3D);
+  //fullScreen(P3D);
+  size(1280, 720, P3D);
   // fullScreen(2);
   background(0);
 
@@ -51,6 +52,8 @@ void draw() {
   } else {
     rotateY(frameCount * yRotationSpeed);
   }
+  
+  rotateZ(frameCount * 0.0001f);
 
   translate(-xTranslation, 0f);
 

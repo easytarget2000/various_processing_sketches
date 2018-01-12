@@ -22,6 +22,7 @@ void setup() {
   // fullScreen(2);
   background(0);
   noFill();
+  strokeWeight(8f);
 }
 
 void draw() {
@@ -66,7 +67,7 @@ void keyReleased() {
 }
 
 private void setRandomColor() {
-  stroke(getRandomColorWithAlpha(0xFF));
+  stroke(getRandomColorWithAlpha(0x60));
 }
 
 private color getRandomColorWithAlpha(final int alpha) {

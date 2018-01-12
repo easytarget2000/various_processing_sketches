@@ -45,9 +45,9 @@ private boolean allowStyleChanges;
  */
 
 void setup() {
-  //size(1920, 1080);
+  //size(1920, 1080, P3D);
   //fullScreen();
-  fullScreen(1);
+  fullScreen(P3D, 2);
   background(0);
 
   numOfRings = MAX_NUM_OF_RINGS / 2;
@@ -58,12 +58,14 @@ void setup() {
   noFill();
   setColor();
 
-  conductor = new Conductor(109f);
+  conductor = new Conductor(65f);
 
   background(0xFF000000);
 }
 
 void draw() {
+
+
 
   if (drawNothing) {
     background(0);
@@ -78,6 +80,30 @@ void draw() {
     background(backgroundColor);
   }
 
+  //for (float degree = 0f; degree < TWO_PI; degree += 0.01f) {
+  //translate(width / 2f, 0f);
+  //rotateY(degree);
+  //translate(-width / 2f, 0f);
+  drawSlice();
+  //}
+
+  if (allowStyleChanges && random(1f) > 0.5f) {
+
+    if (conductor.isBeatDue(1) && random(1f) > 0.2f) {
+      setNumOfRings();
+    }
+
+    if (conductor.isBeatDue(1) && random(1f) > 0.1f) {
+      setColor();
+    }
+
+    if (conductor.isBeatDue(4)) {
+      setRandomClearBackground();
+    }
+  }
+}
+
+private void drawSlice() {
   float[] xOffsets = new float[MAX_VERTICES_PER_RING];
   float[] yOffsets = new float[MAX_VERTICES_PER_RING];
   for (int offsetCounter = 0; offsetCounter < xOffsets.length; offsetCounter++) {
@@ -108,21 +134,6 @@ void draw() {
     }
 
     line(lastX, lastY, firstX, firstY);
-  }
-
-  if (allowStyleChanges && random(1f) > 0.5f) {
-
-    if (conductor.isBeatDue(1) && random(1f) > 0.2f) {
-      setNumOfRings();
-    }
-    
-    if (conductor.isBeatDue(1) && random(1f) > 0.1f) {
-      setColor();
-    }
-    
-    if (conductor.isBeatDue(4)) {
-      setRandomClearBackground();
-    }
   }
 }
 
@@ -177,10 +188,6 @@ private void increaseOuterRingRadius() {
   outerRingRadius *= 1.3f;
 }
 
-private void drawBackground() {
-  background(backgroundColor);
-}
-
 private void setNumOfRings() {
   if (random(1f) > 0.5f) {
     numOfRings *= 1.3f;
@@ -201,7 +208,7 @@ private float getJitter() {
 
 private void setColor() {
   if (!clearBackground && getBrightness() > 0.05f) {
-    stroke(0x60000000);
+    stroke(0x10000000);
   } else {
     stroke(getRandomColor());
   }

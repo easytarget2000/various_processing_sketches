@@ -28,7 +28,7 @@ public class Particle {
     this.y = y;
   }
 
-  public boolean updateAndDraw(final Particle[] allParticles) {
+  public boolean updateAndDraw(final Particle[] allParticles, boolean snapToClosest) {
 
     Particle closestParticle = allParticles[0];
     float distanceToClosestParticle = MAX_FLOAT;
@@ -42,7 +42,10 @@ public class Particle {
       }
 
       final float distanceToOtherParticle = distance(otherParticle);
-      if (distanceToOtherParticle < distanceToClosestParticle) {
+      if (snapToClosest && distanceToOtherParticle > distanceToClosestParticle) {
+        closestParticle = otherParticle;
+        distanceToClosestParticle = distanceToOtherParticle;
+      } else if (distanceToOtherParticle < distanceToClosestParticle) {
         closestParticle = otherParticle;
         distanceToClosestParticle = distanceToOtherParticle;
       }
@@ -54,7 +57,6 @@ public class Particle {
       angle = angle(otherParticle) + (angle * 0.05f);
 
       force *= 0.05;
-
 
       if (distanceToOtherParticle < 2f) {
         force -= 2f;

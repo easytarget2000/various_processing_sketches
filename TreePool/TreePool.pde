@@ -10,6 +10,8 @@ private ArrayList<Particle> particles = new ArrayList<Particle>();
 
 private float maxJitter;
 
+private boolean snapToFirst = false;
+
 /**
  * Lifecycle
  */
@@ -38,6 +40,22 @@ void draw() {
   if (millis() % 2 == 0) {
     //println("Randomly adding particles.");
     addParticles(32);
+  }
+}
+
+void keyPressed() {
+  switch (key) {
+    case 'c':
+      snapToFirst = true;
+      break;
+  }
+}
+
+void keyReleased() {
+  switch (key) {
+    case 'c':
+      snapToFirst = false;
+      break;
   }
 }
 
@@ -72,9 +90,10 @@ private void updateAndDrawParticles() {
 
   final Particle[] particlesArray = new Particle[particles.size()];
   particles.toArray(particlesArray);
+
   for (int i = 0; i < particles.size(); i++) {
     final Particle currentParticle = particles.get(i);
-    if (!currentParticle.updateAndDraw(particlesArray)) {
+    if (!currentParticle.updateAndDraw(particlesArray, snapToFirst)) {
       particles.remove(i);
     }
   }
