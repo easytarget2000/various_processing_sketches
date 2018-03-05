@@ -14,7 +14,7 @@
 
 void setup() {
   //size(1920, 1080, P3D);
-   fullScreen(P3D);
+  fullScreen(P3D, 2);
   // fullScreen(2);
   background(0);
 
@@ -23,7 +23,15 @@ void setup() {
 }
 
 void draw() {
-  background(0);
+background(0); 
+  //if (random(1f) > 0.95f) {
+  //  background(0);
+  //  return;
+  //}
+  
+  //if (random(1f) < 0.9f) {
+  //  background(0);
+  //}
 
   float angle = 0;
 

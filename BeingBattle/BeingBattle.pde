@@ -16,6 +16,8 @@ private ArrayList<Being> beings;
 
 private color lastBeingColor;
 
+private color backgroundColor;
+
 /**
  * Lifecycle
  */
@@ -36,10 +38,15 @@ void setup() {
 void draw() {
 
   if (random(1f) < clearScreenProbability) {
-    background(getRandomColor());
+    backgroundColor = getRandomColor();
+    background(backgroundColor);
   }
   updateTrajectories();
   updateAndDrawBeings();
+  
+  fill(backgroundColor);
+  rect(width * 0.35f, height * 0.05f, 160f, 512f);
+  rect(width * 0.45f, height * 0.45f, 256f, 200f);
 }
 
 /**

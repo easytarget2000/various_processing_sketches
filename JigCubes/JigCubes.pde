@@ -18,9 +18,9 @@ private int counter = 0;
 
 void setup() {
   //size(1920, 1080, P3D);
-  //fullScreen(P3D);
+  fullScreen(P3D, 2);
   //fullScreen(2);
-  size(1280, 720, P3D);
+  //size(1280, 720, P3D);
   background(0);
 
   colorMode(HSB, 255);
@@ -29,10 +29,21 @@ void setup() {
 }
 
 void draw() {
-  background(0);
+  if (random(1f) > 0.9f) {
+    background(0);
+    return;
+  }
+  
+  //lights();
+
+  //if (random(1f) < 0.7f) {
+  //  background(0);
+  //}
 
   float angle = 0;
   translate(width / 2f, height / 2f, 0f); 
+
+  stroke(map((frameCount % 360) / 4f, 0, 360, 0, 255), 255, 255);
 
   for (float radius = 1f; radius < 128f; radius += radiusStep) {
 
@@ -42,7 +53,7 @@ void draw() {
 
     //ofColor c;
     //final color c;
-    stroke(map((int)(angle) % 360, 0, 360, 0, 255), 255, 255);
+    //stroke(map((int)(angle) % 360, 0, 360, 0, 255), 255, 255);
     //ofSetColor(c);
 
     float x = 1920 + radius * cos(counter * DEG_TO_RAD);

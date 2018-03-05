@@ -16,149 +16,72 @@ Based on http://deconbatch.blogspot.de/2017/06/hydrangea-glaze.html
  You should have received a copy of the GNU General Public License
  along with this program.  If not, see 
  */
- 
- private float divIdo = 4f;
 
-import java.util.Random;
+private Conductor conductor;
 
-/* ---------------------------------------------------------------------- */
-abstract class PshapeElement {
+private float deltaYAngle = 64f;
 
-  PShape anElement;
-  float elementColor, elementSaturation, elementBright, elementAlpha;
+private PshapeElement shapeElement;
 
-  PshapeElement() {
-    anElement = pscreateElement();
-    elementColor = 0;
-    elementSaturation = 0;
-    elementBright = 0;
-    elementAlpha = 0;
-  }
+private float hue = 0f;
 
-  abstract PShape pscreateElement();
+private float elementXScale;
 
-  void setElementFill(float pcolor, float psaturation, float pbright, float palpha) {
-    elementColor = pcolor;
-    elementSaturation = psaturation;
-    elementBright = pbright;
-    elementAlpha = palpha;
-    resetColor();
-  }
+private float elementYScale;
 
-  void resetColor() {
-    anElement.setFill(color(elementColor, elementSaturation, elementBright, elementAlpha));
-    anElement.setStroke(color(elementColor, elementSaturation, elementBright, elementAlpha));
-  }
+private float deltaElementYScale;
 
-  void changeColor(float scolor) {
-    elementColor = scolor;
-    resetColor();
-  }
+private float deltaHue = 0.001f;
 
-  void changeBright(float sbright) {
-    elementBright = sbright;
-    resetColor();
-  }
+private PVector cameraPosition;
 
-  void resetSize() {
-    anElement.resetMatrix();
-  }
+private PVector cameraVelocity;
 
-  void changeSize(float scaleX, float scaleY, float scaleZ) {
-    anElement.scale(scaleX, scaleY, scaleZ);
-  }
+private boolean clearScreen = false;
 
-  void rotate(float radX, float radY, float radZ) {
-    anElement.rotateX(radX);
-    anElement.rotateY(radY);
-    anElement.rotateZ(radZ);
-  }
-
-  void show() {
-    shape(anElement);
-  }
-}
-
-/* ---------------------------------------------------------------------- */
-class RoundBrush extends PshapeElement {
-
-  RoundBrush() {
-    super();
-  }
-
-  PShape pscreateElement() {
-
-    stroke(0);
-    noFill();
-    PShape psDp = createShape(ELLIPSE, 0.0, 0.0, 10.0, 10.0);
-    return psDp;
-  }
-}
-
-/* ---------------------------------------------------------------------- */
-class EllipseBrush extends PshapeElement {
-
-  EllipseBrush() {
-    super();
-  }
-
-  PShape pscreateElement() {
-
-    noStroke();
-    fill(0);
-    PShape psDp = createShape(ELLIPSE, 0.0, 0.0, 10.0, 10.0);
-    return psDp;
-  }
-}
-
-/* ---------------------------------------------------------------------- */
-
-PshapeElement pRound, pEllipse;
-
-private float cameraEyeY = 1800f;
-
-private float cameraVelocity = 0.01f;
+private boolean swapColors;
 
 void setup() {
   size(1920, 1080, P3D);
+  //fullScreen(P3D, 2);
 
-  colorMode(HSB, 360, 100, 100, 100);
+  colorMode(HSB, 1f, 1f, 1f, 1f);
   blendMode(SCREEN);
   strokeWeight(0.06);
   smooth(8);
-  //noLoop();
-  //  frameRate(1);
 
-  pRound = new RoundBrush();
-  pEllipse = new EllipseBrush();
+  initCamera();
+
+  conductor = new Conductor(130f);
+
+  shapeElement = new RoundBrush();
+  initElementScale();
+
+  setSwapColorsRandomly();
+  
+  frameRate(30);
 }
 
 void draw() {
-  
-  if (random(1f) > 0.9f) {
-    background(0);
-    return;
+
+  setSwapColorsRandomly();
+  drawBackground();
+
+  if (random(1f) > 0.8f) {
+    clearScreen = !clearScreen;
   }
-  
-  setCameraEyeY();
-
-  background(0, 0, 8);
-
-  translate(0, 0, 0);
-  camera(
-    0, cameraEyeY, 1000, 
-    0, 0, 0, 
-    0, 1, 0
-    );
+  //translate(0, 0, 0);
+  adjustCamera();
 
   drawPottery();
 
-  if (random(1f) > 0.8f) {
-    reverseCameraVelocity();
+  if (conductor.isBeatDue(4) && random(1f) > 0.5f) {
+    reverseCameraYVelocity();
   }
+}
 
-  //saveFrame("frames/####.png");
-  //exit();
+void keyPressed() {
+  initElementScale();
 }
 
 private void drawPottery() {
@@ -166,82 +89,119 @@ private void drawPottery() {
   PVector locateRound = new PVector(0, 0, 0);
   PVector locateEllipse = new PVector(0, 0, 0);
 
-  final float radiusRound = 800.0;
-  final float radiusEllipse = 799.0;
-  divIdo -= 0.1f;
-  if (divIdo < 6f) {
-    divIdo = 24f;
-  }
-  float divKdo = 0.0; // dummy
-  final float circleBase = 6.0;
-  final float circleMult = 3.0;
-  //  final float circleBase = 8.0;
-  //  final float circleMult = 2.0;
+  final float radiusEllipse = 799f;
 
-  float noiseHueIdo = random(50);
-  float noiseSatIdo = random(50);
-  float noiseSizIdo = random(50);
+  adjustElementScale();
+  adjustHue();
+  float currentHue = hue;
+  final float alpha = clearScreen ? 1f : 0.67f;
 
-  final float noiseHueKdoStarter = random(50);
-  final float noiseSatKdoStarter = random(50);
-  final float noiseSizKdoStarter = random(50);
+  for (float yAngle = 0f; yAngle <= 360f; yAngle += deltaYAngle) { // Y
+    final float yRotationRad = radians(yAngle);
+    final float deltaZAngle = (deltaYAngle / 2f) * max((128f / deltaYAngle * sin(yRotationRad)), 2f);
 
-  for (float ido = 32f; ido <= 256f; ido += divIdo) { // Y
-    final float radianIdo = radians(ido);
-    divKdo = 32f / max((128f / divIdo * sin(radianIdo)), 1f);
+    for (float zAngle = 0f; zAngle <= 360f - deltaZAngle; zAngle += deltaZAngle) { // Z
 
-    float noiseHueKdo = noiseHueKdoStarter;
-    float noiseSatKdo = noiseSatKdoStarter;
-    float noiseSizKdo = noiseSizKdoStarter;
+      final float zRotationRad = radians(zAngle);
 
-    for (float kdo = 0; kdo <= 360 - divKdo; kdo += divKdo) { // Z
+      currentHue += 0.01f;
 
-      final float radianKdo = radians(kdo);
-      locateRound.set(
-        radiusRound * cos(radianKdo) * sin(radianIdo), 
-        radiusRound * sin(radianKdo) * sin(radianIdo), 
-        radiusRound * cos(radianIdo)
-        );
       locateEllipse.set(
-        radiusEllipse * cos(radianKdo) * sin(radianIdo), 
-        radiusEllipse * sin(radianKdo) * sin(radianIdo), 
-        radiusEllipse * cos(radianIdo)
+        radiusEllipse * cos(zRotationRad) * sin(yRotationRad), 
+        radiusEllipse * sin(zRotationRad) * sin(yRotationRad), 
+        radiusEllipse * cos(yRotationRad)
         );
 
-      final float roundSize = map(noise(noiseSizIdo, noiseSizKdo), 0.0, 1.0, circleMult * circleBase, circleBase);
-      final float roundHue = map(noise(noiseHueIdo, noiseHueKdo), 0.0, 1.0, 260, 360);
-      final float roundSat = map(noise(noiseSatIdo, noiseSatKdo), 0.0, 1.0, 20.0, 100.0);
-      final float roundBri = map(noise(noiseSatIdo, noiseSatKdo), 0.0, 1.0, 60.0, 100.0);
-      final float roundAlp = 100;
-
-      final float fctBri = map(locateRound.z, -radiusRound, radiusRound, 0.1, 1.2);
-
-      // glaze
       pushMatrix();
       translate(locateRound.x, locateRound.y, locateRound.z);
-      rotateZ(radianKdo); // must be this order Z -> Y
-      rotateY(radianIdo);
-      pRound.resetSize();
-      pRound.changeSize(roundSize, roundSize, 1.0);
-      pRound.setElementFill(roundHue, roundSat, roundBri * fctBri, roundAlp);
-      pRound.show();
+      rotateZ(zRotationRad); // must be this order Z -> Y
+      rotateY(yRotationRad);
+
+      if (swapColors) {
+        shapeElement.setColor(0f, 0f, 1f, alpha);
+      } else {
+        shapeElement.setColor(
+          currentHue, 
+          1f, 
+          0.7f, 
+          alpha
+          );
+      }
+
+      shapeElement.drawShape();
       popMatrix();
-
-      noiseHueKdo += 0.05;
-      noiseSatKdo += 0.12;
-      noiseSizKdo += 0.10;
     }
-
-    noiseHueIdo += 0.05f;
-    noiseSatIdo += 0.12f;
-    noiseSizIdo += 0.10f;
   }
 }
 
-private void setCameraEyeY() {
-  cameraEyeY += cameraVelocity;
+private void drawBackground() {
+  if (clearScreen) {
+    if (swapColors) {
+      background(hue, 0.5f, 1f);
+    } else {
+      background(0f, 0f, 0f);
+    }
+  }
 }
 
-private void reverseCameraVelocity() {
-  cameraVelocity *= -1f;
+/*
+Camera
+ */
+
+private void initCamera() {
+  final float cameraX = 0f;
+  final float cameraY = 2048f;
+  final float cameraZ = min(width, height);
+  cameraPosition = new PVector(cameraX, cameraY, cameraZ);
+
+  cameraVelocity = new PVector(0f, cameraY / 64f, 0f);
+}
+
+private void adjustCamera() {
+  if (cameraPosition.y < 128f || cameraPosition.y > 3000f) {
+    cameraVelocity.y *= -1f;
+  }
+
+  cameraPosition = PVector.add(cameraPosition, cameraVelocity);
+
+  camera(
+    cameraPosition.x, cameraPosition.y, cameraPosition.z, 
+    0f, 0f, 0f, 
+    0f, 1f, 0f
+    );
+}
+
+private void reverseCameraYVelocity() {
+  //cameraVelocity.y *= -1f;
+}
+
+private void adjustHue() {
+  hue += deltaHue;
+  if (hue > 1f || hue < 0f) {
+    deltaHue *= -1f;
+    hue += deltaHue;
+  }
+}
+
+private void initElementScale() {
+  elementXScale = min(width, height) / 64f;
+  elementYScale = elementXScale / 8f;
+  deltaElementYScale = elementYScale / 16f;
+  shapeElement.changeSize(elementXScale, elementYScale, 16f);
+}
+
+private void adjustElementScale() {
+  elementYScale += deltaElementYScale;
+  if (elementYScale < elementXScale / 16f || elementYScale > elementXScale * 1.5f) {
+    deltaElementYScale *= -1f;
+    elementYScale += deltaElementYScale;
+  }
+  shapeElement.resetSize();
+  shapeElement.changeSize(elementXScale, elementYScale, 16f);
+}
+
+private void setSwapColorsRandomly() {
+  if (random(1f) > 0.99f) {
+    swapColors = !swapColors;
+  }
 }
