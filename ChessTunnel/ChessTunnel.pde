@@ -52,7 +52,7 @@ void draw() {
 
       translate(0f, 128f, 0f);
       //pushMatrix();
-      rotateX(AngleDelta);
+      rotateX(AngleDelta + xMovementRotation);
       //translate(width / 2f, height / 2f, 0f);
       //popMatrix();
 

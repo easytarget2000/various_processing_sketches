@@ -48,7 +48,7 @@ void setup() {
 
 void draw() {
 
-  if (random(1f) > 0.9f) {
+  if (random(1f) > 0.95f) {
     clearFrame = !clearFrame;
   }
 
@@ -58,7 +58,12 @@ void draw() {
 
   if (clearFrame) {
     background(0);
+    return;
   }
+  
+  fill(0x30000000);
+  noStroke();
+  rect(0f, 0f, width, height);
   
   noFill();
 

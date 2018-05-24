@@ -190,7 +190,7 @@ void drawFace() {
         float roundSize = map(noise(noiseSizIdo, noiseSizKdo), 0.0, 1.0, circleMult * circleBase, circleBase);
         float roundHue = (baseColor + map(noise(noiseBriIdo, noiseBriKdo), 0.0, 1.0, 0, 160)) % 360;
         float roundSat = map(noise(noiseSatIdo, noiseSatKdo), 0.0, 1.0, 10.0, 100.0);
-        float roundBri = map(noise(noiseBriIdo, noiseBriKdo), 0.0, 1.0, 20.0, 255  .0);
+        float roundBri = map(noise(noiseBriIdo, noiseBriKdo), 0.0, 1.0, 20.0, 255.0);
         float roundAlp = 255;
 
         float fctBri = map(locateRound.z, -radiusRound, radiusRound, 0.1, 1.2);

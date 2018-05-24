@@ -2,16 +2,32 @@
 class Terrain {
 
   private final int size;
+
   private final int max;
+
   private final float[] heightMap;
+
   private final float roughness;
+
   private final int yOffset;
+
+  private final color waterColor = color(0x30660000);
+
+  private final float waterHeight;
+
+  private final float x0 = width / 2f;
+
+  private final float y0 = height / 2f;
+
+  private final float chunkWidth;
 
   Terrain(final int size_, final int yOffset_, final float roughness_) {
     size = size_;
     yOffset = yOffset_;
     max = size - 1;
     heightMap = new float[size * size];
+    chunkWidth = width / size * 2f;
+    waterHeight = size * 0.2f;
 
     roughness = roughness_;
     setHeightMapValue(0, 0, max);
@@ -90,8 +106,7 @@ class Terrain {
     setHeightMapValue(x, y, ave + offset);
   }
 
-  public void draw_(final int yOffset) {
-    final float waterHeight = size * 0.6f;
+  public void draw_() {
 
     for (int y = 0; y < size; y++) {
       //final int offsetY = y + yOffset;
@@ -105,33 +120,43 @@ class Terrain {
         colorRect(terrainTop, terrainBottom, terrainColor);
 
         final PVector water = project(x, y, waterHeight);
-        final color waterColor = color(50f, 150f, 200f, 256f * 0.15f);
         colorRect(water, terrainBottom, waterColor);
       }
     }
   }
-  private void colorRect(PVector top, PVector bottom, color c) {
-    if (bottom.y < top.y) return;
-    noStroke();
+  private void colorRect(final PVector top, final PVector bottom, final color c) {
+    //if (bottom.y < top.y) {
+    //  return;
+    //}
+    //stroke(0xFF000000);
+    //fill(0xFFFF00FF);
     fill(c);
     rect(top.x, top.y, bottom.x - top.x, bottom.y - top.y);
   }
 
   private color brightnessAtPos(float x, float y, float slope) {
     if (y == max || x == max) {
-      return color(0);
+      return color(0f);
     }
     return color((slope * 50f) + 128f);
   }
 
   private PVector project(float flatX, float flatY, float flatZ) {
-    final PVector point = new PVector(flatX, flatY + (millis() / 50) + yOffset);
-    float x0 = width * 0.5;
-    float y0 = height * 0.5;
-    float z = size * 0.1 - flatZ + point.y * 0.5;
-    float x = (point.x - size * 0.5) * 8;
-    float y = (size - point.y) * 0.005 + 1;
+    //PVector point = iso(flatX, flatY);
+    //float x0 = width * 0.5;
+    //float y0 = height * 0.2;
 
-    return new PVector(x0 + x/y, y0 + z/y);
+    flatY += (millis() / 128f);
+
+    final float cameraAltitude = 16f;
+
+    final float z = (size * 0.5f) - flatZ * 4f + (flatY * cameraAltitude);
+    final float x = (flatX - size * 0.5f) * chunkWidth;
+    final float y = (size - flatY) / 256f + 2f;
+
+    return new PVector(
+      x0 + x/y, 
+      y0 + z/y  + yOffset
+      );
   }
 }

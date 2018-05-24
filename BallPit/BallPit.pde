@@ -76,7 +76,8 @@ private void drawBalls() {
   final float sphereSize = min(width, height) / 40f;
   final float sphereDistance = min(width, height) / 16f;
 
-  noFill();
+  //noFill();
+  noStroke();
 
   final float collectionCenterX = (width / 2f) - (sphereDistance * numOfSpheresPerSide / 2f);
   final float collectionCenterY = (height / 2f) - (sphereDistance * numOfSpheresPerSide / 2f);
@@ -91,7 +92,7 @@ private void drawBalls() {
       for (int xColumn = 0; xColumn < numOfSpheresPerSide; xColumn++) {
         final float hue = (xColumn + (yRow * numOfSpheresPerSide) + (zPlane * numOfSpheresPerPlane)) / numOfSpheres; 
         //final float hue = zPlane / (float) numOfSpheresPerSide;
-        stroke(hue, 0.5f, 1f, 0.5f);
+        fill(hue, 0.5f, 1f, 0.5f);
         sphere(sphereSize);
         translate(sphereDistance, random(1f), random(1f));
       }
@@ -102,8 +103,8 @@ private void drawBalls() {
 }
 
 private void updateCamera() {
-  cameraEye.y = cameraCenter.y + (sin(millis() % 16000 / 16000f * TWO_PI) * 128f);
-  cameraEye.x = cameraCenter.x + (sin(millis() % 4000 / 4000f * TWO_PI) * 32f);
+  cameraEye.y = cameraCenter.y + (sin(millis() % 16000 / 16000f * TWO_PI) * 2048f);
+  cameraEye.x = cameraCenter.x + (sin(millis() % 12000 / 12000f * TWO_PI) * 1024f);
 
   camera(
     cameraEye.x, cameraEye.y, cameraEye.z, 

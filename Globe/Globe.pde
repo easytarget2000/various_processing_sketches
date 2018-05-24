@@ -51,19 +51,21 @@ void draw() {
     setRandomColor();
   }
 
-  translate(centerX, 0f);
-  //rotateY(frameCount * (0.1f + random(0.01f)));
-  rotateY(frameCount * yRotationSpeed);
-  translate(-centerX, 0f);
+  for (int i = 0; i < (int) random(64f); i++) {
+    translate(centerX, 0f);
+    //rotateY(frameCount * (0.1f + random(0.01f)));
+    rotateY(frameCount * yRotationSpeed);
+    translate(-centerX, 0f);
 
-  ellipse(centerX, centerY, radius, radius);
+    ellipse(centerX, centerY, radius, radius);
 
-  translate(0f, centerY);
-  //rotateX(frameCount * (0.1f + random(0.01f)));
-  rotateX(frameCount * xRotationSpeed);
-  translate(0F, -centerY);
+    translate(0f, centerY);
+    //rotateX(frameCount * (0.1f + random(0.01f)));
+    rotateX(frameCount * xRotationSpeed);
+    translate(0F, -centerY);
 
-  ellipse(centerX, centerY, radius, radius);
+    ellipse(centerX, centerY, radius, radius);
+  }
 }
 
 private void setRandomGlobeValues() {

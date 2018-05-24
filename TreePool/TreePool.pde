@@ -30,8 +30,12 @@ void setup() {
 void draw() {
 
   //if (millis() % 2 == 0) {
-    background(0);
+  //  background(0);
   //}
+  
+  noStroke();
+  fill(0x30000000);
+  rect(0f, 0f, width, height);
 
   for (int i = 0; i < 8; i++) {
     updateAndDrawParticles();
