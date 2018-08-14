@@ -37,16 +37,10 @@ class Alga {
     pushMatrix();
     //translate(center.x, center.y, center.z);
 
-    final float widthHalf = width / 2f;
-    final float heightHalf = height / 2f;
     final float anglePerRotation = TWO_PI / numOfZRotations;
 
     for (int i = 0; i < POINTS_PER_ROTATION; i++) {
-      drawPoints(
-        widthHalf, 
-        heightHalf, 
-        anglePerRotation
-        );
+      drawPoints(anglePerRotation);
     }
 
     changeHue();
@@ -55,8 +49,6 @@ class Alga {
   }
 
   private void drawPoints(
-    final float widthHalf, 
-    final float heightHalf, 
     final float anglePerRotation
     ) {
 
@@ -104,19 +96,19 @@ class Alga {
       translate(center.x, center.y, center.z);
       rotate(rotationCounter * anglePerRotation);
 
-      stroke(getHue(0f), 1f, 1f, 0.33f);
+      stroke(getHue(0f), 1f, 1f, 0.8f);
       //stroke(255f, 255f, 255f, 32f);
       point(shape1X, shape1Y);
       //point(xx - 1, yy - 1);
 
       //stroke(250f, 50f, 150f, 128f);
-      stroke(getHue(0.5f), 1f, 1f, 0.33f);
+      stroke(getHue(0.5f), 1f, 1f, 0.7f);
       point(shape3X, shape3Y);
       ////point(xx3 + 1, yy3 + 1);
 
       rotate(TWO_PI / numOfZRotations / 2f);
       //stroke(0f, 150f, 250f, 128f);
-      stroke(getHue(0.1f), 1f, 1f, 0.33f);
+      stroke(getHue(0.1f), 1f, 1f, 0.7f);
       point(shape2X, shape2Y);
       ////point(xx2, yy2 + 1);
 
@@ -132,7 +124,7 @@ class Alga {
 
   private void changeHue() {
     //if ((hue += HUE_FRAME_STEP) > 1f) {
-      //hue = 0f;
+    //hue = 0f;
     //}
   }
 

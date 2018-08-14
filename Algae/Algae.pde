@@ -45,7 +45,7 @@ private void initAlgae() {
 
     final long randomSeed = (long) random(1024f);
     final float hue = random(1f);
-    final int numOfZRotations = 4;
+    final int numOfZRotations = 3 + (int) random(4f);
     
     algae[i] = new Alga(
       center, 
