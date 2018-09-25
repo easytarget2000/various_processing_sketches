@@ -7,7 +7,7 @@ Based on http://junkiyoshi.com/insta20180519/
  * Constants
  */
 
-private static final int NUM_OF_BALLS = 512;
+private static final int NUM_OF_BALLS = 5120;
 
 private static final float CHANGE_RANDOM_SEED_PROBABILITY = 0.02f;
 
@@ -83,7 +83,8 @@ private void drawBalls() {
 
     pushMatrix();
     translate(point.x, point.y, point.z);
-    sphere(8f);
+    ellipse(0f, 0f, 8f, 8f);
+    //sphere(8f);
     //ellipse(0f, 0f, 32f, 32f);
     popMatrix();
   }

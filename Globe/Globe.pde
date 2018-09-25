@@ -24,8 +24,8 @@ private Conductor conductor = new Conductor(120f);
 
 void setup() {
   //size(1920, 1080, P3D);
-  //fullScreen(P3D);
-  size(1280, 720, P3D);
+  fullScreen(P3D);
+  //size(1280, 720, P3D);
 
   // fullScreen(2);
   background(0);

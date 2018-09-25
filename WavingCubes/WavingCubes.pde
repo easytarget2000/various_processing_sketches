@@ -98,7 +98,7 @@ void draw_() {
     }
     push();
     rotateY(QUARTER_PI*sin(TWO_PI*t - .75*PI*i/numOfBoxes));
-    box(128 + 32 * i);
+    abox(128 + 32 * i);
     //final float radius = 256f + 32f * i;
     //ellipse(0f, 0f, radius, radius);
     pop();
@@ -120,6 +120,21 @@ void keyPressed() {
     setFidgetMode();
     break;
   }
+}
+
+void abox(final float size) {
+  push();
+  stroke(0x550000FF);
+  super.box(size);
+  
+  translate(.1f, .1f, .1f);
+  stroke(0x55FF0000);
+  super.box(size);
+  
+  translate(.1f, .1f, .1f);
+  stroke(0x5500FF00);
+  super.box(size);
+  pop();
 }
 
 private void setCalmMode() {
