@@ -22,7 +22,7 @@ private boolean drawFrameRate = false;
 
 void setup() {
   //fullScreen(2);
-  fullScreen(P3D);
+  fullScreen(P3D, 2);
   //size(1920, 1080, P3D);
   //size(1920, 1080);
 
@@ -34,9 +34,9 @@ void setup() {
   initFoliage();
 
   screenClearer = new ScreenClearer(
-    ScreenClearerMode.FADE, 
+    ScreenClearerMode.FULL, 
     0, 
-    32
+    4
     );
   screenClearer.performFullClear();
 
