@@ -96,5 +96,5 @@ private void drawFrameRate() {
 }
 
 private void setColor() {
-  color_ = new Palette().getRandomColor();
+  color_ = new Palette().getRandomColorWithAlpha(150);
 }
