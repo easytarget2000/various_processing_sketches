@@ -8,15 +8,15 @@ Variables
 
 private PVector focusVector;
 
-private int shapesPerFrame = 1;
+private int numOfShapesToInit = 1024;
 
-private float minShapeLength;
-
-private float maxShapeLength;
-
-private float shapeHeight;
+private ArrayList<Shape> shapes;
 
 private boolean drawFocus = true;
+
+private float fadeAlpha = 0.05f;
+
+private int shapeAlpha = 50;
 
 /*
 Lifecycle
@@ -36,7 +36,9 @@ void setup() {
 }
 
 void draw() {
-  //clearScreen();
+  //fadeClearScreen();
+  clearScreen();
+  setFocusPosition();
   drawShapes();
 
   if (drawFocus) {
@@ -45,7 +47,7 @@ void draw() {
 }
 
 void mouseClicked() {
-  setFocusPosition();
+  //setFocusPosition();
 }
 
 /*
@@ -53,68 +55,56 @@ Implementations
  */
 
 private void setFocusPosition() {
-  focusVector = new PVector(width / 2f, height / 2f);//new PVector(mouseX, mouseY);
-  clearScreen();
+  focusVector = new PVector(mouseX, mouseY);
 }
 
 private void setShapeValues() {
-  minShapeLength = 16f;
-  maxShapeLength = min(width, height) / 2f;
-  shapeHeight = minShapeLength * 0.66f;
+  final float minShapeWidth = 16f;
+  final float maxShapeWidth = min(width, height) / 2f;
+  final float minShapeHeight = minShapeWidth * 0.33f;
+  final float maxShapeHeight = minShapeHeight * 3f;
+
+  shapes = new ArrayList<Shape>();
+  for (int i = 0; i < numOfShapesToInit; i++) {
+    final PVector shapeVector = getRandomShapeVector();
+    final float shapeWidth = minShapeWidth + (noise(shapeVector.x, shapeVector.y) * (maxShapeWidth - minShapeWidth));
+    final float shapeHeight = minShapeHeight + random(maxShapeHeight - minShapeHeight);
+    final color shapeColor = getRandomColor(shapeVector.x, shapeVector.y, shapeAlpha);
+    final Shape shape = new Shape(
+      shapeVector, 
+      shapeWidth, 
+      shapeHeight, 
+      shapeColor
+      );
+    shapes.add(shape);
+  }
+}
+
+private PVector getRandomShapeVector() {
+  return new PVector(
+    (width * 0.05f) + (width * random(0.9f)),
+    (height * 0.05f) + (height * random(0.9f))
+  );
 }
 
 private void clearScreen() {
   background(0);
+}
 
-  //noStroke();
-  //fill(0f, 0f, 0f, 0.1f);
-  //rect(0f, 0f, width, height);
+private void fadeClearScreen() {
+  noStroke();
+  fill(0f, 0f, 0f, fadeAlpha);
+  rect(0f, 0f, width, height);
 }
 
 private void drawShapes() {
 
-  for (int i = 0; i < shapesPerFrame; i++) {
-    drawRandomShape();
+  for (final Shape shape : shapes) {
+    shape.draw_(focusVector);
   }
-}
-
-private void drawRandomShape() {
-  setFillColor();
-
-  final PVector shapeVector = new PVector(128f, 512f); //new PVector(random(width), random(height));
-  final PVector shapeToFocusVector = shapeVector.sub(focusVector);
-  final float angleToFocus = PVector.angleBetween(shapeVector, shapeToFocusVector);
-  final float shapeLength = 128f; //minShapeLength + random(maxShapeLength - minShapeLength);
-
-  stroke(0xFFFFF00);
-  line(shapeVector.x, shapeVector.y, focusVector.x, focusVector.y);
-
-  pushMatrix();
-  translate(shapeVector.x, shapeVector.y);
-  //rotate(angleToFocus);
-  //stroke(0xFFFF00FF);
-  //rect(0f, 0f, shapeLength, shapeHeight);
-  popMatrix();
-}
-
-private void setFillColor() {
-  noStroke();
-  final float hue = random(1f);
-  final float saturation = 0.8f;
-  final float brightness = 0.6f;
-  final float alpha = 0.5f;
-  fill(hue, saturation, brightness, alpha);
 }
 
 private void drawFocus() {
   stroke(0xFFFFFFF);
   point(focusVector.x, focusVector.y);
-}
-
-private float angle(final PVector v1, final PVector v2) {
-  float angle = atan2(v2.y, v2.x) - atan2(v1.y, v1.x);
-  if (angle < 0f) {
-    angle += TWO_PI;
-  }
-  return angle;
 }

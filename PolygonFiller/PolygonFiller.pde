@@ -14,12 +14,13 @@ Lifecycle
 
 void setup() {
   //size(800, 600);
-  fullScreen();
+  fullScreen(2);
   // size(1024, 1024, P3D);
   // fullScreen(P3D);
   colorMode(HSB, 1f);
   smooth();
   initPolygonDriversEmpty();
+  //initPolygonDriversFilling();
 }
 
 void draw() {
@@ -48,8 +49,16 @@ private void initPolygonDriversEmpty() {
   polygonDrivers = new ArrayList<PolygonDriver>();
 }
 
+private void initPolygonDriversFilling() {
+  initPolygonDriversEmpty();
+  for (int i = 0; i < 128; i++) {
+    final PVector polygonVector = new PVector(random(width), random(height));
+    addPolygon(polygonVector);
+  }
+}
+
 private void addPolygon(final PVector position) {
-  final float maxVelocity = min(width, height) / 256f;
+  final float maxVelocity = 0.2f;
   final PVector velocity = new PVector(
     (maxVelocity / 2f) - random(maxVelocity), 
     (maxVelocity / 2f) - random(maxVelocity), 
@@ -69,10 +78,10 @@ private void addPolygon(final PVector position) {
 private PShape buildShape(final PVector position) {
   final float shapeX1 = 0f;
   final float shapeY1 = 0f;
-  final float shapeX2 = 256f;
-  final float shapeY2 = 16f;
+  final float shapeX2 = 400f;
+  final float shapeY2 = 64f;
   final float shapeX3 = 320f;
-  final float shapeY3 = 280f;
+  final float shapeY3 = 512f;
   final PShape shape = createShape(
     TRIANGLE, 
     shapeX1, 

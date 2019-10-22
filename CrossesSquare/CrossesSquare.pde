@@ -15,7 +15,8 @@ private float t, c;
  */
 
 void setup() {
-  size(1080, 720);
+  //size(1080, 720);
+  fullScreen(2);
   pixelDensity(2);
   smooth(8);
   rectMode(CENTER);

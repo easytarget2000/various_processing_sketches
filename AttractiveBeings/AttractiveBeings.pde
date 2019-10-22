@@ -24,7 +24,7 @@ void setup() {
   //size(800, 600, P3D);
   //fullScreen();
   // size(1024, 1024, P3D);
-  fullScreen(P3D);
+  fullScreen(P3D, 2);
   colorMode(HSB, 1f);
   //sphereDetail(8);
   smooth();
