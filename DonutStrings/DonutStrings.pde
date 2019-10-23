@@ -2,22 +2,19 @@
 // https://gist.github.com/beesandbombs/a47aca30b520ad070b32a3afcf2fdc99
 
 private static final boolean RECORDING = false;
+private static final boolean BLACK = false;
 
 private Projector projector;
-private float x, y, z, tt;
-private int N = 1200;
-private int numStrands = 8;
-private float R = 150, r = 50;
-private float th, ph;
-private float hue, depth, twist;
-private boolean black;
+private int numStrands = 16;
+private int numOfLinesPerStrand = 1200;
 
 /*
 * PApplet Lifecycle
-*/
+ */
 
 void setup() {
-  size(750, 750, P3D);
+  //size(750, 750, P3D);
+  fullScreen(P3D);
 
   smooth(8);  
   colorMode(HSB, 1f);
@@ -31,6 +28,8 @@ void setup() {
   };
   projector = new Projector(width, height, projectorListener);
   projector.recording = RECORDING;
+
+  background(0xFF69D2E7);
 }
 
 void draw() {
@@ -39,25 +38,22 @@ void draw() {
 
 /*
 * Implementations
-*/
+ */
+
+//private float x, y, z, tt;
+
+//private float th, ph;
+//private float hue, depth, twist;
 
 private void draw_(final float t) {
-  twist = TWO_PI*cos(TWO_PI*t);
+  
+  //background(0f);
 
-  background(0);
   push();
-  translate(width/2, height/2);
+  translate(width / 2f, height / 2f);
 
-  strokeWeight(16f);
-  black = false;
-  donut();
-
-  strokeWeight(10);
-  black = true;
-  push();
-  translate(0, 0, -.1);
-  donut();
-  pop();
+  strokeWeight(2f);
+  donut(t);
 
   pop();
 }
@@ -72,27 +68,29 @@ private void draw_(final float t) {
 //  popMatrix();
 //}
 
-void vert(float x_, float y_, float z_) {
-  depth = map(modelZ(x_, y_, z_), -r, r, 0, 1);
-  stroke(hue, .8, 0f+1f*depth);
-  if (black)
-    stroke(0);
-  vertex(x_, y_, z_);
-}
+private void donut(final float t) {
+  final float thickness = min(width, height) / 6f;
+  final float innerRadius = (min(width, height) * 0.45f) - thickness;
+  final float twist = TWO_PI*cos(TWO_PI*t);
 
-void donut() {
-  for (int a=0; a<numStrands; a++) {
-    hue = a*1.0/numStrands;
+  for (int strandIndex = 0; strandIndex < numStrands; strandIndex++) {
+    final float hue = strandIndex * 1f / numStrands;
 
     beginShape();
-    for (int i=0; i<N; i++) {
-      th = TWO_PI*i/N;
-      ph = TWO_PI*a/numStrands + twist*sin(th);
-      x = (R+r*cos(ph))*cos(th);
-      y = (R+r*cos(ph))*sin(th);
-      z = r*sin(ph);
-      vert(x, y, z);
+    for (int lineIndex = 0; lineIndex < numOfLinesPerStrand; lineIndex++) {
+      final float th = TWO_PI * lineIndex / numOfLinesPerStrand;
+      final float ph = TWO_PI * strandIndex / numStrands + (twist * sin(th));
+      final float x = (innerRadius+thickness * cos(ph))*cos(th);
+      final float y = (innerRadius+thickness * cos(ph))*sin(th);
+      final float z = thickness*sin(ph);
+      vert(x, y, z, thickness, hue);
     }
     endShape(CLOSE);
   }
+}
+
+private void vert(float x_, float y_, float z_, final float r, final float hue) {
+  final float depth = map(modelZ(x_, y_, z_), -r, r, 0, 1);
+  stroke(hue, 0.33f, depth);
+  vertex(x_, y_, z_);
 }
