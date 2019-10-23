@@ -83,6 +83,7 @@ void setup() {
   ymin = -8.5f * width;
   ymax = 0.8f* width;
 
+  colorMode(HSB, 1f);
   background(0);
 }
 
@@ -92,7 +93,17 @@ private static final int m = 128;
 
 //private static final float f = 0.5f;
 
+private boolean didClearScreen = false;
+
 void draw_() {
+  if (!didClearScreen && noise(t * 1000f) > 0.5f) {
+      background(0);
+      didClearScreen = true;
+      return;
+  }
+  
+  didClearScreen = false;
+
   push();
   translate(width/2f, (height/2f) - 200f, 5f);
   rotateX(0.32f * PI);
@@ -104,14 +115,13 @@ void draw_() {
   final float rad = 0.8f;
   final float change = 1.5f;
 
+  noStroke();
   for (int i = 0; i < n; i++) {
 
     final float x1 = map(i, 0, n, xmin, xmax);
     final float x2 = map(i + 1f, 0, n, xmin, xmax);
 
-    final float c = (i % 3) < 1 ? 232:15;
-    fill(c);
-    noStroke();
+    //fill(hue);
 
     beginShape(TRIANGLE_STRIP);
     for (int j = 0; j < m; j++) {
@@ -148,16 +158,13 @@ void draw_() {
 
       final float ff = constrain(
         map(
-        modelZ(
-        (xxx1 + ds1 + xxx2 + ds2) / 2f, 
-        y, 
-        (depth1 + depth2) / 2f
-        ), 
-        -3000f, 500f, 0f, 1f
+        modelZ((xxx1 + ds1 + xxx2 + ds2) / 2f, y, (depth1 + depth2) / 2f), 
+        -3000f, 500f, 
+        0f, 1f
         ), 0f, 1f
         );
 
-      fill(ff * c);
+      fill(t, 0.9f, ff, 1f);
 
       vertex(xxx1 + ds1, y, depth1);
       vertex(xxx2 + ds2, y, depth2);
