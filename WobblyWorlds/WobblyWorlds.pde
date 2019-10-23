@@ -30,80 +30,69 @@ void pop() {
 }
 
 void draw() {
+  for (int i=0; i<width*height; i++)
+    for (int a=0; a<3; a++)
+      result[i][a] = 0;
 
-  if (!recording) {
-    t = mouseX*1.0/width;
-    c = mouseY*1.0/height;
-    if (mousePressed)
-      println(c);
+  c = 0;
+  for (int sa=0; sa<samplesPerFrame; sa++) {
+    t = map(frameCount-1 + sa*shutterAngle/samplesPerFrame, 0, numFrames, 0, 1);
     draw_();
-  } else {
-    for (int i=0; i<width*height; i++)
-      for (int a=0; a<3; a++)
-        result[i][a] = 0;
-
-    c = 0;
-    for (int sa=0; sa<samplesPerFrame; sa++) {
-      t = map(frameCount-1 + sa*shutterAngle/samplesPerFrame, 0, numFrames, 0, 1);
-      draw_();
-      loadPixels();
-      for (int i=0; i<pixels.length; i++) {
-        result[i][0] += pixels[i] >> 16 & 0xff;
-        result[i][1] += pixels[i] >> 8 & 0xff;
-        result[i][2] += pixels[i] & 0xff;
-      }
-    }
-
     loadPixels();
-    for (int i=0; i<pixels.length; i++)
-      pixels[i] = 0xff << 24 | 
-        int(result[i][0]*1.0/samplesPerFrame) << 16 | 
-        int(result[i][1]*1.0/samplesPerFrame) << 8 | 
-        int(result[i][2]*1.0/samplesPerFrame);
-    updatePixels();
-
-    //saveFrame("fr###.gif");
-    println(frameCount, "/", numFrames);
-    if (frameCount==numFrames)
-      exit();
+    for (int i=0; i<pixels.length; i++) {
+      result[i][0] += pixels[i] >> 16 & 0xff;
+      result[i][1] += pixels[i] >> 8 & 0xff;
+      result[i][2] += pixels[i] & 0xff;
+    }
   }
+
+  loadPixels();
+  for (int i=0; i<pixels.length; i++)
+    pixels[i] = 0xff << 24 | 
+      int(result[i][0]*1/samplesPerFrame) << 16 | 
+      int(result[i][1]*1/samplesPerFrame) << 8 | 
+      int(result[i][2]*1f/samplesPerFrame);
+  updatePixels();
+
+  //saveFrame("fr###.gif");
+  //println(frameCount, "/", numFrames, frameRate);
+  //if (frameCount==numFrames)
+  //  exit();
 }
 
 //////////////////////////////////////////////////////////////////////////////
 
-int samplesPerFrame = 1;
-int numFrames = 30;        
-float shutterAngle = 0.6;
+int samplesPerFrame = 2;
+int numFrames = 120;        
+float shutterAngle = 64;
 
 boolean recording = true;
-
-OpenSimplexNoise noise;
 
 float xmin, xmax;
 
 float ymin, ymax;
 
 void setup() {
-  size(640, 640, P3D);
+  //size(800, 800, P3D);
+  fullScreen(P3D);
   result = new int[width*height][3];
-
-  noise = new OpenSimplexNoise();
 
   xmin = -1.7f * width;
   xmax = 1.7f * width;
 
   ymin = -8.5f * width;
   ymax = 0.8f* width;
+
+  background(0);
 }
 
-private static final int n = 50;
-private static final int m = 2000;
-private static final int N = 6;
+private static final int n = 64;
+private static final int m = 128;
+//private static final int N = 6;
 
 //private static final float f = 0.5f;
 
 void draw_() {
-  background(0);
   push();
   translate(width/2f, (height/2f) - 200f, 5f);
   rotateX(0.32f * PI);
@@ -115,10 +104,10 @@ void draw_() {
   final float rad = 0.8f;
   final float change = 1.5f;
 
-  for (int i=0; i< n * N; i++) {
+  for (int i = 0; i < n; i++) {
 
-    final float x1 = map(i, 0, n*N, xmin, xmax);
-    final float x2 = map(i + 1f, 0, n*N, xmin, xmax);
+    final float x1 = map(i, 0, n, xmin, xmax);
+    final float x2 = map(i + 1f, 0, n, xmin, xmax);
 
     final float c = (i % 3) < 1 ? 232:15;
     fill(c);
@@ -133,23 +122,23 @@ void draw_() {
       final float xx1 = (1f - p) * x1;
       final float xx2 = (1f - p) * x2;
 
-      final float xxx1 = (1f - (0.7f *p)) * x1;
-      final float xxx2 = (1f - (0.7f *p)) * x2;
+      final float xxx1 = (1f - (0.2f *p)) * x1;
+      final float xxx2 = (1f - (0.3f *p)) * x2;
 
-      final float offset = 15f * pow(1 - p, 2f)/5f;
+      final float offset = 15f * pow(1 - p, 3f) / 5f;
 
-      final float ds1 = 40f *(float) noise.eval(
-        seed + change * offset + rad*cos(TWO_PI*(-t + offset)), 
+      final float ds1 = 64f * noise(
+        seed + change * offset + rad * cos(TWO_PI*(-t + offset)), 
         rad * sin(TWO_PI*(-t + offset)), 
         0.01f * xx1
         );
-      final float ds2 = 40f * (float) noise.eval(
-        seed + (change * offset) + rad*cos(TWO_PI*(-t + offset)), 
+      final float ds2 = 64f * noise(
+        seed + (change * offset) + rad * cos(TWO_PI*(-t + offset)), 
         rad * sin(TWO_PI*(-t + offset)), 
         0.01f * xx2
         );
-      final float dy = 45f * (float) noise.eval(
-        (2f * seed) + change*offset + rad*cos(TWO_PI*(-t + offset)), 
+      final float dy = 128f * noise(
+        (2f * seed) + change*offset + rad * cos(TWO_PI*(-t + offset)), 
         rad * sin(TWO_PI*(-t + offset)), 
         0.01f * xx2
         );
