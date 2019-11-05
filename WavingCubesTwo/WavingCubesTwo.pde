@@ -108,16 +108,6 @@ void drawCubes() {
   pop();
 }
 
-private void push() {
-  pushMatrix();
-  pushStyle();
-}
-
-private void pop() {
-  popStyle();
-  popMatrix();
-}
-
 private float ease(float p, float g) {
   if (p < 0.5) 
     return 0.5 * pow(2*p, g);

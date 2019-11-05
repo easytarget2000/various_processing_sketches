@@ -62,7 +62,7 @@ void mousePressed() {
     if (zVertexCoordinates[n] > 0 && l < lmin) { 
       nn = n; 
       lmin = l;
-    }§  
+    } 
   }
 
   if (k == 0) { 

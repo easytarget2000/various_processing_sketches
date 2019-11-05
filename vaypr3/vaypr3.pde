@@ -22,7 +22,7 @@ private boolean drawFrameRate = false;
 
 void setup() {
   //fullScreen(2);
-  fullScreen(P3D, 2);
+  fullScreen(P3D);
   //size(1920, 1080, P3D);
   //size(1920, 1080);
 
@@ -34,9 +34,9 @@ void setup() {
   initFoliage();
 
   screenClearer = new ScreenClearer(
-    ScreenClearerMode.FULL, 
+    ScreenClearerMode.FADE, 
     0, 
-    4
+    32
     );
   screenClearer.performFullClear();
 
@@ -96,5 +96,5 @@ private void drawFrameRate() {
 }
 
 private void setColor() {
-  color_ = new Palette().getRandomColorWithAlpha(150);
+  color_ = new Palette().getRandomColor();
 }

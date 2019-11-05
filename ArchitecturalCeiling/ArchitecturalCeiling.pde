@@ -26,7 +26,7 @@ void setup() {
   for (int i = 0; i < MAX_NODES; i++) {
     x =(i%xpline)*xdist;
     y = floor(i/xpline)*ydist;
-    z = random(-30f, 50f);
+    z = noise(-30f, 50f);
 
     final Node newNode = new Node(
       x - width / 2f, 
@@ -91,8 +91,8 @@ void draw() {
 void randomisepos() {
   for (int i = 0; i < MAX_NODES; i++) {
     final Node n = grp.group.get(i);
-    n.xpos = random(-n.xpos, n.xpos);
-    n.ypos = random(-n.ypos, n.ypos);
+    n.xpos = noise(-n.xpos, n.xpos);
+    n.ypos = noise(-n.ypos, n.ypos);
     final float xx = map(noise(-n.xpos, n.xpos), 0, 1, 1, 7);
     final float yy = map(noise(-n.ypos, n.ypos), 0, 1, 1, 7);
     n.xpos += (i % xpline) * xdist - width / 2f;

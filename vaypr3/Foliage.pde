@@ -20,10 +20,8 @@ class Foliage {
 
   private FoliageNode firstNode;
 
-  private PVector center;
-
   private int numOfNodes = 0;
-
+  
   private int nodeAddCounter = 0;
 
   private float displaySize = max(width, height);
@@ -45,7 +43,7 @@ class Foliage {
    */
 
   public Foliage() {
-    center = new PVector(width / 2f, height / 2f, 0f);
+    //mJitter = mDisplaySize * 0.002f;
   }
 
   public Foliage initCircle() {
@@ -86,7 +84,7 @@ class Foliage {
           lastNode.next = node;
           lastNode = node;
         }
-
+        
         ++numOfNodes;
       }
     }
@@ -118,7 +116,7 @@ class Foliage {
         lastNode.next = node;
         lastNode = node;
       }
-
+      
       ++numOfNodes;
     }
 
@@ -141,7 +139,7 @@ class Foliage {
     stroke(c);
     strokeWeight(4f);
     nodeAddCounter = 0;
-
+    
     for (int i = 0; i < roundsPerDrawCall; i++) {
       drawAndUpdateNodes();
     }
@@ -153,46 +151,20 @@ class Foliage {
     FoliageNode currentNode = firstNode.next;
     FoliageNode nextNode;
 
-    PVector summedVector = new PVector();
-    int summedVectorsCount = 0; 
-
-    final boolean drawOutline = true;
-    final boolean drawCenterLines = false;
-
-    if (drawOutline) {
-      beginShape();
-    }
+    beginShape();
     do {
       nextNode = currentNode.next;
       if (nextNode == null) {
         break;
       }
 
+      //drawAndUpdateNode(currentNode);
       currentNode.update();
-
-      if (drawOutline) {
-        vertex(
-          currentNode.vector.x, 
-          currentNode.vector.y, 
-          currentNode.vector.z
-          );
-      }
-
-      if (drawCenterLines) {
-        line(
-          currentNode.vector.x, 
-          currentNode.vector.y, 
-          currentNode.vector.z, 
-          center.x, 
-          center.y, 
-          center.z
-          );
-      }
-
-      if (nodeCounter % 16 == 0) {
-        summedVector = PVector.add(summedVector, currentNode.vector);
-        ++summedVectorsCount;
-      }
+      vertex(
+        currentNode.vector.x, 
+        currentNode.vector.y, 
+        currentNode.vector.z
+        );
 
       if (
         nodeAddCounter < ADD_NODE_ROUND_LIMIT
@@ -206,58 +178,50 @@ class Foliage {
       currentNode = nextNode;
       ++nodeCounter;
     } while (!stopped && currentNode != firstNode);
+    endShape();
 
-    if (drawOutline) {
-      endShape();
-    }
-
-    center = new PVector(
-      summedVector.x / summedVectorsCount, 
-      summedVector.y / summedVectorsCount, 
-      summedVector.z / summedVectorsCount
-      );
-
-    drawSecondShape(drawOutline, drawCenterLines);
+    drawSecondShape();
+    
+    //println("" + numOfNodes);
   }
 
-  private void drawSecondShape(final boolean drawOutline, final boolean drawCenterLines) {
+  private void drawSecondShape() {
     FoliageNode currentNode = firstNode;
     FoliageNode nextNode;
 
-    if (drawOutline) {
-      beginShape();
-    }
+    beginShape();
     do {
       nextNode = currentNode.next;
       if (nextNode == null) {
         break;
       }
 
-      if (drawOutline) {
-        vertex(
-          currentNode.vector.x - width / 5f, 
-          currentNode.vector.y, 
-          currentNode.vector.z
-          );
-      }
-
-      if (drawCenterLines) {
-        line(
-          currentNode.vector.x - width / 5f, 
-          currentNode.vector.y, 
-          currentNode.vector.z, 
-          center.x, 
-          center.y, 
-          center.z
-          );
-      }
+      vertex(
+        currentNode.vector.x - width / 5f, 
+        currentNode.vector.y, 
+        currentNode.vector.z
+        );
 
       currentNode = nextNode;
     } while (!stopped && currentNode != firstNode);
-    if (drawOutline) {
-      endShape();
-    }
+    endShape();
   }
+
+  //private void drawAndUpdateNode(final FoliageNode node) {
+  //  node.update();
+
+  //  point(
+  //    node.vector.x, 
+  //    node.vector.y, 
+  //    node.vector.z
+  //    );
+
+  //  point(
+  //    node.vector.x - width / 4f, 
+  //    node.vector.y, 
+  //    node.vector.z
+  //    );
+  //}
 
   private void addNodeNextTo(final FoliageNode node) {
     final FoliageNode oldNeighbour = node.next;
@@ -271,7 +235,7 @@ class Foliage {
 
     node.next = newNeighbour;
     newNeighbour.next = oldNeighbour;
-
+    
     ++numOfNodes;
   }
 

@@ -5,7 +5,7 @@ private int numFrames = 128;
 private int parts = 4;
 private float t = 0f;
 private float offset_factor = 2.0;
-private int m = 2048;
+private int m = 4096;
 private float motion_rad = 2f;
 private float size = 0.4f;
 private int numberOfLines = MAX_NUMBER_OF_LINES / 3;
@@ -13,27 +13,28 @@ private int numberOfLines = MAX_NUMBER_OF_LINES / 3;
 void setup() {
   fullScreen(P3D);
   background(20f, 200f, 200f);
+  colorMode(HSB, 1f);
 
   strokeWeight(2);
 }
 
 void draw() {
-  fill(240f, 220f, 120f, 10f);
+  fill(0.7f, 0.9f, 0.9f, 0.1f);
   noStroke();
   rect(0f, 0f, width, height);
 
   t = (frameCount - 1f) / (float) numFrames;
 
   if (noise(frameCount) > 0.8f) {
-    numberOfLines = (int) (random(1f) * (MAX_NUMBER_OF_LINES + (MAX_NUMBER_OF_LINES - MIN_NUMBER_OF_LINES)));
+    numberOfLines = (int) random(MIN_NUMBER_OF_LINES, MAX_NUMBER_OF_LINES);
   }
 
   if (noise(frameCount * frameRate) > 0.8f) {
-    background(220f, 200f, 100f);
+    background(1f, 1f, 1f);
     return;
   }
 
-  stroke(10f, 100f);
+  stroke(1f, 0.33f);
 
   push();
   translate(width / 2f, height / 2f);

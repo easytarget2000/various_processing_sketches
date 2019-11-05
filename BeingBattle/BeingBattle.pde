@@ -47,7 +47,7 @@ void draw() {
 
 void keyPressed() {
   initTrajectories();
-  beings = new ArrayList<Being>();as
+  beings = new ArrayList<Being>();
 }
 /**
  * Implementations

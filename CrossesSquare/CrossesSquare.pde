@@ -16,7 +16,7 @@ private float t, c;
 
 void setup() {
   //size(1080, 720);
-  fullScreen(2);
+  fullScreen();
   pixelDensity(2);
   smooth(8);
   rectMode(CENTER);
@@ -92,16 +92,6 @@ void draw_() {
     }
   }
   pop();
-}
-
-private void push() {
-  pushMatrix();
-  pushStyle();
-}
-
-private void pop() {
-  popStyle();
-  popMatrix();
 }
 
 private void drawCross() {
