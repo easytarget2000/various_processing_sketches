@@ -5,7 +5,7 @@ private PImage lastImage;
 private boolean drawOverlay = false;
 
 void setup() {
-  fullScreen(P2D);
+  size(1090,600);
 
   String[] cameras = Capture.list();
 
@@ -47,10 +47,18 @@ private void drawFromCam() {
   cam.read();
   //image(cam, 0, 0);
   final PImage camImage = cam.copy();
+  
+  if (lastImage == null) {
+    lastImage = camImage;
+    return;
+  }
+  
+  set(0, 0);
+  lastImage = camImage;
   final float brightness = imageBrightness(camImage);
 
   text(String.valueOf(brightness), 10f, 10f);
-  camImage.save("cam.jpg");
+  //camImage.save("cam.jpg");
   //exit();
 }
 
@@ -61,9 +69,9 @@ private float imageBrightness(final PImage image) {
   for (int x = 0; x < image.width; x++) {
     for (int y = 0; y < image.height; y++) {
       final color color_ = image.get(x, y); //<>//
-      if (color_ != -16777216) {
-        println("c: ", color_);
-      }
+      //if (color_ != -16777216) {
+      //  println("c: ", color_);
+      //}
       brightnessSum += brightness(color_);
       pixelCounter += 1f;
     }
