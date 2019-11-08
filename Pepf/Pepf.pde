@@ -4,7 +4,8 @@ private static final color OVERLAY_COLOR = 0xFFFFFFFF;
 private Capture cameraCapture;
 private PImage lastImage;
 private boolean showCameraImage = false;
-private boolean showCameraBrightness = false;
+private boolean showCameraBrightness = true;
+private int brightnessCalcStepSize = 1;
 private int overlayItemsPerRow = 60;
 private int overlayItemsPerCol = 40;
 private int overlayRow = 0;
@@ -32,7 +33,6 @@ void setup() {
   }
 
   background(0);
-  frameRate = 1;
 }
 
 void draw() {
@@ -73,15 +73,15 @@ private float imageBrightness(final PImage image) {
 
   float brightnessSum = 0;
   int pixelCounter = 0;
-  for (int x = 0; x < image.width; x++) {
-    for (int y = 0; y < image.height; y++) {
+  for (int x = 0; x < image.width; x += brightnessCalcStepSize) {
+    for (int y = 0; y < image.height; y += brightnessCalcStepSize) {
       final color color_ = image.get(x, y);
       brightnessSum += brightness(color_);
-      pixelCounter += 1f;
+      pixelCounter += brightnessCalcStepSize;
     }
   }
 
-  return brightnessSum / (float) pixelCounter;
+  return (brightnessSum * brightnessCalcStepSize) / (float) pixelCounter;
 }
 
 private void drawOverlay() {
