@@ -53,9 +53,13 @@ private void drawFromCam() {
     return;
   }
   
-  set(0, 0);
-  lastImage = camImage;
-  final float brightness = imageBrightness(camImage);
+  final PImage blendImage = camImage.copy();
+  blendImage.blend(lastImage, 0, 0, lastImage.width, lastImage.height, 0, 0, camImage.width, camImage.height, SUBTRACT);
+  set(0, 0, blendImage);
+  lastImage = camImage.copy();
+  
+  
+  final float brightness = imageBrightness(blendImage);
 
   text(String.valueOf(brightness), 10f, 10f);
   //camImage.save("cam.jpg");
@@ -69,9 +73,6 @@ private float imageBrightness(final PImage image) {
   for (int x = 0; x < image.width; x++) {
     for (int y = 0; y < image.height; y++) {
       final color color_ = image.get(x, y); //<>//
-      //if (color_ != -16777216) {
-      //  println("c: ", color_);
-      //}
       brightnessSum += brightness(color_);
       pixelCounter += 1f;
     }
