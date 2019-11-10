@@ -6,10 +6,12 @@ private PImage lastImage;
 private boolean showCameraImage = false;
 private boolean showCameraBrightness = true;
 private int brightnessCalcStepSize = 1;
-private int overlayItemsPerRow = 60;
-private int overlayItemsPerCol = 40;
-private int overlayRow = 0;
-private int overlayCol = 0;
+private int scanItemsPerRow = 6;
+private int scanItemsPerCol = 4;
+private int scanRow = 0;
+private int scanColumn = 0;
+private boolean isScanning = false;
+private float[] brightnessValues;
 
 void setup() {
   size(1090, 600);
@@ -32,6 +34,7 @@ void setup() {
     cameraCapture.start();
   }
 
+  initScan();
   background(0);
 }
 
@@ -40,8 +43,17 @@ void draw() {
     return;
   }
 
-  drawOverlay();
-  compareCameraBrightness();
+  if (isScanning) {
+    drawScanOverlay();
+    compareCameraBrightness();
+  } else {
+    drawScanResults();
+  }
+}
+
+private void initScan() {
+  brightnessValues = new float[scanItemsPerRow * scanItemsPerCol];
+  isScanning = true;
 }
 
 private void compareCameraBrightness() {
@@ -63,14 +75,13 @@ private void compareCameraBrightness() {
   lastImage = camImage.copy();
 
   final float brightness = imageBrightness(blendImage);
-
+  setScanBrightnessValue(scanColumn, scanRow, brightness);//brightness;
   if (showCameraBrightness) {
     text(String.valueOf(brightness), 10f, 10f);
   }
 }
 
 private float imageBrightness(final PImage image) {
-
   float brightnessSum = 0;
   int pixelCounter = 0;
   for (int x = 0; x < image.width; x += brightnessCalcStepSize) {
@@ -84,27 +95,54 @@ private float imageBrightness(final PImage image) {
   return (brightnessSum * brightnessCalcStepSize) / (float) pixelCounter;
 }
 
-private void drawOverlay() {
+private void drawScanOverlay() {
   background(0);
   noFill();
   stroke(OVERLAY_COLOR);
   rect(0f, 0f, width - 1f, height - 1f);
 
-  final float rowLength = width;
-  final float overlayItemWidth = rowLength / overlayItemsPerRow;
-  final float overlayItemX = overlayCol * overlayItemWidth;
-  final float colHeight = height;
-  final float overlayItemHeight = colHeight / overlayItemsPerCol;
-  final float overlayItemY = overlayRow * overlayItemHeight;
+  final float scanRowWidth = width;
+  final float scanItemWidth = scanRowWidth / scanItemsPerRow;
+  final float scanItemX = scanColumn * scanItemWidth;
+  final float scanColHeight = height;
+  final float scanItemHeight = scanColHeight / scanItemsPerCol;
+  final float scanItemY = scanRow * scanItemHeight;
 
   noStroke();
   fill(OVERLAY_COLOR);
-  rect(overlayItemX, overlayItemY, overlayItemWidth, overlayItemHeight);
+  rect(scanItemX, scanItemY, scanItemWidth, scanItemHeight);
 
-  if (++overlayCol > overlayItemsPerRow) {
-    overlayCol = 0;
-    if (++overlayRow > overlayItemsPerCol) {
-      overlayRow = 0;
+  if (++scanColumn >= scanItemsPerRow) {
+    scanColumn = 0;
+    if (++scanRow >= scanItemsPerCol) {
+      scanRow = 0;
+      isScanning = false;
     }
   }
+}
+
+private void drawScanResults() {
+  final float scanRowWidth = width;
+  final float scanItemWidth = scanRowWidth / scanItemsPerRow;
+  final float scanColHeight = height;
+  final float scanItemHeight = scanColHeight / scanItemsPerCol;
+
+  noStroke();
+  for (int col = 0; col < scanItemsPerCol; col++) {
+    for (int row = 0; row < scanItemsPerRow; row++) {
+      final float itemX = col * scanItemWidth;
+      final float itemY = row * scanItemHeight;
+      final float brightness = getScanBrightnessValue(col, row);
+      fill(brightness);
+      rect(itemX, itemY, scanItemWidth, scanItemHeight);
+    }
+  }
+}
+
+private void setScanBrightnessValue(final int col, final int row, final float value) {
+  brightnessValues[col + (row * scanItemsPerRow)] = value;
+}
+
+private float getScanBrightnessValue(final int col, final int row) {
+  return brightnessValues[col + (row * scanItemsPerRow)];
 }
