@@ -1,20 +1,20 @@
-import processing.video.*; //<>// //<>//
+import processing.video.*; //<>// //<>// //<>// //<>//
 
 private static final color OVERLAY_COLOR = 0xFFFFFFFF;
 private Capture cameraCapture;
 private PImage lastImage;
-private boolean showCameraImage = false;
-private boolean showCameraBrightness = true;
+private Mode mode = Mode.CAMERA;
+private boolean showCameraBrightness = false;
 private int brightnessCalcStepSize = 1;
-private int scanItemsPerRow = 32;
+private int scanItemsPerRow = 16;
 private int scanItemsPerCol = 24;
 private int scanRow = 0;
 private int scanColumn = 0;
-private boolean isScanning = false;
 private float[] brightnessValues;
 
 void setup() {
-  size(1090, 600);
+  //size(1090, 600);
+  fullScreen(2);
 
   String[] cameras = Capture.list();
 
@@ -30,11 +30,10 @@ void setup() {
     }
 
     final int lastCamIndex = cameras.length - 1;
-    cameraCapture = new Capture(this, width, height, cameras[lastCamIndex]);
+    cameraCapture = new Capture(this, width, height, cameras[0]);
     cameraCapture.start();
   }
 
-  initScan();
   background(0);
 }
 
@@ -43,11 +42,30 @@ void draw() {
     return;
   }
 
-  if (isScanning) {
+  switch (mode) {
+  case CAMERA:
+    showCameraImage();
+    return;
+  case SCAN:
     drawScanItemAndAdvance();
     compareCameraBrightness();
-  } else {
+    return;
+  case SCAN_DONE:
     drawScanValues();
+  }
+}
+
+void keyPressed() {
+  switch (key) {
+  case 's':
+    initScanMode();
+    return;
+  case 'c':
+    setCameraMode();
+    return;
+  case 'b':
+    toggleShowCameraBrightness();
+    return;
   }
 }
 
@@ -55,9 +73,22 @@ void draw() {
 Implementations
  */
 
-private void initScan() {
+private void initScanMode() {
   brightnessValues = new float[scanItemsPerRow * scanItemsPerCol];
-  isScanning = true;
+  mode = Mode.SCAN;
+}
+
+private void setCameraMode() {
+  mode = Mode.CAMERA;
+}
+
+private void toggleShowCameraBrightness() {
+  showCameraBrightness = !showCameraBrightness;
+}
+
+private void showCameraImage() {
+  //set(0, 0, cameraCapture);
+  image(cameraCapture, 0f, 0f);
 }
 
 private void drawScanItemAndAdvance() {
@@ -97,13 +128,10 @@ private void compareCameraBrightness() {
 
   final PImage blendImage = camImage.copy();
   blendImage.blend(lastImage, 0, 0, lastImage.width, lastImage.height, 0, 0, camImage.width, camImage.height, SUBTRACT);
-  if (showCameraImage) {
-    set(0, 0, blendImage);
-  }
   lastImage = camImage.copy();
 
   final float brightness = imageBrightness(blendImage);
-  setScanBrightnessValue(scanColumn, scanRow, brightness);//brightness;
+  setScanBrightnessValue(scanColumn, scanRow, brightness);
   if (showCameraBrightness) {
     text(String.valueOf(brightness), 10f, 10f);
   }
@@ -124,7 +152,7 @@ private float imageBrightness(final PImage image) {
 }
 
 private void finishScanning() {
-  isScanning = false;
+  mode = Mode.SCAN_DONE;
   normalizeScanValues();
 }
 
@@ -137,6 +165,16 @@ private void normalizeScanValues() {
     } else if (brightness < lowestBrightness) {
       lowestBrightness = brightness;
     }
+  }
+
+  for (int i = 0; i < brightnessValues.length; i++) {
+    brightnessValues[i] = map(
+      brightnessValues[i], 
+      lowestBrightness, 
+      highestBrightness, 
+      0f, 
+      1f
+      );
   }
 }
 
