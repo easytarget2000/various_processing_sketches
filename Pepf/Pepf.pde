@@ -1,29 +1,33 @@
-import processing.video.*; //<>//
+import processing.video.*; //<>// //<>//
 
 private static final boolean VERBOSE = true;
-private static final color OVERLAY_COLOR = 0xFFFFFFFF;
+private static final boolean SAVE_SCAN_IMAGE_FILES = true;
 private static final String SCAN_FILE_NAME_FORMAT = "scan_%s_%d_%d_%f.jpg";
+private static final color OVERLAY_COLOR = 0xFFFFFFFF;
+private static final int DRAW_TO_READ_SCAN_DELAY_MILLIS = 32;
+
+LuminanceCalculator luminanceCalculator = new LuminanceCalculator();
 private String scanFileNamePrefix;
 private Capture cameraCapture;
 private PImage lastImage;
 private Mode mode = Mode.CAMERA;
-private boolean saveBlendImages = true;
-private int brightnessCalcStepSize = 1;
-private int scanItemsPerRow = 8;
+private int scanItemsPerRow = 6;
 private int scanItemsPerCol = 4;
 private int scanRow = 0;
 private int scanColumn = 0;
-private float[] brightnessValues;
+private float[] luminanceValues;
 
 void setup() {
-  size(1090, 600);
-  //fullScreen(2);
-
-
-  colorMode(HSB, 1f);
+  //size(1090, 600);
+  fullScreen(2);
+  colorMode(HSB, 1f, 1f, 1f, 1f);
 
   initCameraCapture();
   background(0);
+  
+  //final PImage testImage = loadImage("test-pink.jpg");
+  //final float luminance = luminanceCalculator.imageLuminance(testImage);
+  //println("testImage luminance:", luminance);
 }
 
 void draw() {
@@ -37,7 +41,6 @@ void draw() {
     return;
   case SCAN:
     drawScanItemAndAdvance();
-    compareCameraBrightness();
     return;
   case SCAN_DONE:
     drawScanValues();
@@ -80,7 +83,7 @@ private void initCameraCapture() {
 
 private void initScanMode() {
   scanFileNamePrefix = String.valueOf((int) random(10000f));
-  brightnessValues = new float[scanItemsPerRow * scanItemsPerCol];
+  luminanceValues = new float[scanItemsPerRow * scanItemsPerCol];
   mode = Mode.SCAN;
 }
 
@@ -92,6 +95,7 @@ private void showCameraImage() {
   cameraCapture.read();
   //image(cameraCapture, 0f, 0f);
   set(0, 0, cameraCapture);
+  colorMode(HSB, 1f);
 
   noStroke();
   fill(0xFFFFFFFF);
@@ -106,9 +110,12 @@ private void showCameraImage() {
 
 private void drawScanItemAndAdvance() {
   background(0);
-  noFill();
-  stroke(OVERLAY_COLOR);
-  rect(0f, 0f, width - 1f, height - 1f);
+
+  if (lastImage == null) {
+    cameraCapture.read();
+    lastImage = cameraCapture.copy();
+    return;
+  }
 
   final float scanRowWidth = width;
   final float scanItemWidth = scanRowWidth / scanItemsPerRow;
@@ -121,24 +128,10 @@ private void drawScanItemAndAdvance() {
   fill(OVERLAY_COLOR);
   rect(scanItemX, scanItemY, scanItemWidth, scanItemHeight);
 
-  if (++scanColumn >= scanItemsPerRow) {
-    scanColumn = 0;
-    if (++scanRow >= scanItemsPerCol) {
-      scanRow = 0;
-      finishScanning();
-    }
-  }
-}
+  delay(DRAW_TO_READ_SCAN_DELAY_MILLIS);
 
-private void compareCameraBrightness() {
   cameraCapture.read();
   final PImage camImage = cameraCapture.copy();
-
-  if (lastImage == null) {
-    lastImage = camImage;
-    return;
-  }
-
   final PImage blendImage = camImage.copy();
   blendImage.blend(
     lastImage, 
@@ -154,27 +147,21 @@ private void compareCameraBrightness() {
     );
   lastImage = camImage.copy();
 
-  final float brightness = imageBrightness(blendImage);
-  setScanBrightnessValue(scanColumn, scanRow, brightness);
+  final float luminance = luminanceCalculator.imageLuminance(blendImage);
+  setScanluminanceValue(scanColumn, scanRow, luminance);
 
-  if (saveBlendImages) {
-    final String fileName = getScanFileName(scanColumn, scanRow, brightness);
+  if (SAVE_SCAN_IMAGE_FILES) {
+    final String fileName = getScanFileName(scanColumn, scanRow, luminance);
     blendImage.save(fileName);
   }
-}
 
-private float imageBrightness(final PImage image) {
-  float brightnessSum = 0;
-  int pixelCounter = 0;
-  for (int x = 0; x < image.width; x += brightnessCalcStepSize) {
-    for (int y = 0; y < image.height; y += brightnessCalcStepSize) {
-      final color color_ = image.get(x, y);
-      brightnessSum += brightness(color_);
-      pixelCounter += brightnessCalcStepSize;
+  if (++scanColumn >= scanItemsPerRow) {
+    scanColumn = 0;
+    if (++scanRow >= scanItemsPerCol) {
+      scanRow = 0;
+      finishScanning();
     }
   }
-
-  return (brightnessSum * brightnessCalcStepSize) / (float) pixelCounter;
 }
 
 private void finishScanning() {
@@ -183,35 +170,36 @@ private void finishScanning() {
 }
 
 private void normalizeScanValues() {
-  float lowestBrightness = 1f;
-  float highestBrightness = 0f;
-  for (float brightness : brightnessValues) {
-    if (brightness > highestBrightness) {
-      highestBrightness = brightness;
-    } else if (brightness < lowestBrightness) {
-      lowestBrightness = brightness;
+  float lowestluminance = 1f;
+  float highestluminance = 0f;
+  for (float luminance : luminanceValues) {
+    if (luminance > highestluminance) {
+      highestluminance = luminance;
+    } else if (luminance < lowestluminance && luminance > 0.0f) {
+      lowestluminance = luminance;
     }
   }
 
   if (VERBOSE) {
-    println("brightnessValues before normalisation:");
-    println(brightnessValues);
+    println("luminanceValues before normalisation:");
+    println(luminanceValues);
+    println();
+    println("Lowest luminance:", lowestluminance);
+    println("Highest luminance:", highestluminance);
   }
 
-  for (int i = 0; i < brightnessValues.length; i++) {
-    brightnessValues[i] = map(
-      brightnessValues[i], 
-      lowestBrightness, 
-      highestBrightness, 
-      0f, 
-      1f
+  for (int i = 0; i < luminanceValues.length; i++) {
+    luminanceValues[i] = norm(
+      luminanceValues[i], 
+      lowestluminance, 
+      highestluminance
       );
   }
 
   if (VERBOSE) {
     println();
-    println("brightnessValues after normalisation:");
-    println(brightnessValues);
+    println("luminanceValues after normalisation:");
+    println(luminanceValues);
   }
 }
 
@@ -227,21 +215,21 @@ private void drawScanValues() {
       final float itemX = col * scanItemWidth;
       final float itemY = row * scanItemHeight;
 
-      final float brightness = getScanBrightnessValue(col, row);
-      fill(brightness);
+      final float luminance = getScanluminanceValue(col, row);
+      fill(luminance);
       rect(itemX, itemY, scanItemWidth, scanItemHeight);
     }
   }
 }
 
-private void setScanBrightnessValue(final int col, final int row, final float value) {
-  brightnessValues[col + (row * scanItemsPerRow)] = value;
+private void setScanluminanceValue(final int col, final int row, final float value) {
+  luminanceValues[col + (row * scanItemsPerRow)] = value;
 }
 
-private float getScanBrightnessValue(final int col, final int row) {
-  return brightnessValues[col + (row * scanItemsPerRow)];
+private float getScanluminanceValue(final int col, final int row) {
+  return luminanceValues[col + (row * scanItemsPerRow)];
 }
 
-private String getScanFileName(final int scanColumn, final int scanRow, float brightness) {
-  return String.format(SCAN_FILE_NAME_FORMAT, scanFileNamePrefix, scanColumn, scanRow, brightness);
+private String getScanFileName(final int scanColumn, final int scanRow, float luminance) {
+  return String.format(SCAN_FILE_NAME_FORMAT, scanFileNamePrefix, scanRow, scanColumn, luminance);
 }
