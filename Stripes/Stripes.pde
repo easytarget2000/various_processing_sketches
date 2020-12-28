@@ -2,7 +2,8 @@ int margin = 50;
 int numFrames = 128;
 
 void setup() {
-  size(600, 600);
+  size(600, 600);    frameRate(60f);
+
 }
 
 void draw() {

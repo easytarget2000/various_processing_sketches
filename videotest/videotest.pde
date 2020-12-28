@@ -8,6 +8,7 @@ private float slitScanWidthToImageRatio = 1f / 128f;
 
 void setup() {
   fullScreen(P2D);
+    frameRate(60f);
 
   String[] cameras = Capture.list();
 
@@ -45,7 +46,7 @@ void draw() {
     drawOverlay();
   }
   
-  if (randomClear) {
+  if (false) {
   }
 }
 

@@ -27,6 +27,7 @@ void setup() {
   colorMode(HSB, 1f);
   background(0);
   setupCamera();
+    frameRate(60f);
 
   elements.add(buildFirstTunnelElement());
 }

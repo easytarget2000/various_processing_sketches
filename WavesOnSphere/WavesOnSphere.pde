@@ -24,6 +24,7 @@ void setup() {
 
   //size(600, 600);
   fullScreen();
+    frameRate(60f);
 
   background(0, 0, 0);
   noSmooth();

@@ -117,6 +117,8 @@ Utils ut;
 PshapeElement pRound, pEllipse;
 
 void setup() {
+      frameRate(60f);
+
   size(1200, 1200, P3D);
 
   colorMode(HSB, 360, 100, 100, 100);

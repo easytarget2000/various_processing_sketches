@@ -74,7 +74,8 @@ float ymin, ymax;
 
 void setup() {
   //size(800, 800, P3D);
-  fullScreen(P3D);
+  fullScreen(P3D);    frameRate(60f);
+
   result = new int[width*height][3];
 
   xmin = -1.7f * width;

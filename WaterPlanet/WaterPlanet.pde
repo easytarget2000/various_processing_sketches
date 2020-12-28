@@ -13,6 +13,7 @@ void setup() {
   smooth();
   sphereDetail(12);
   //frameRate(30);
+    frameRate(60f);
 
   wd = new World();
   pt = new Particle();
