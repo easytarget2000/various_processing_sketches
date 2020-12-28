@@ -17,6 +17,8 @@ void setup() {
   fullScreen(P3D);
   colorMode(HSB, 1f);
   background(0);
+    frameRate(60f);
+
 }
 
 void draw() {

@@ -28,6 +28,7 @@ void setup() {
   // fullScreen(2);
   setupCamera();
   initOriginShapes();
+    frameRate(60f);
 
   background(0);
 }

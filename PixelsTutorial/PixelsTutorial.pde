@@ -16,6 +16,7 @@ void setup() {
   //size(1024, 1024, P3D);
   fullScreen(P3D);
   //colorMode(HSB, 1f);
+    frameRate(60f);
 
   image  = loadImage("face.png"); // Load the image
   background(0);

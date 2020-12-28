@@ -23,6 +23,7 @@ private boolean drawFrameRate = false;
 void setup() {
   //fullScreen(2);
   fullScreen(P3D);
+  frameRate(60);
   //size(1920, 1080, P3D);
   //size(1920, 1080);
 

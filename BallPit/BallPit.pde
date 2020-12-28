@@ -27,6 +27,8 @@ void setup() {
   background(0);
 
   sphereDetail(8);
+    frameRate(60f);
+
   setupCamera();
   
   colorMode(HSB, 1f);

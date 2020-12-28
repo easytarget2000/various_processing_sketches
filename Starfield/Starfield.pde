@@ -35,6 +35,7 @@ private float coverMaxY;
 void setup() {
   fullScreen();
   //size(1920, 1080);
+    frameRate(60f);
 
   beatIntervalMillis = (int) ((60f / bpm) * 1000f);
   println(beatIntervalMillis + " xss");

@@ -16,6 +16,8 @@ void setup() {
 
   // fullScreen();
   fullScreen(1);
+      frameRate(60f);
+
   background(0);
   firstSlopes = new Slope[64];
   for (int i = 0; i < firstSlopes.length; i++) {

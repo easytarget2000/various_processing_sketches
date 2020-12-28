@@ -26,6 +26,9 @@ void setup() {
   //fullScreen(P3D);
    fullScreen(P3D, 2);
   background(0);
+  
+      frameRate(60f);
+
 
   colorMode(HSB, 255f);
   sphereDetail(12);

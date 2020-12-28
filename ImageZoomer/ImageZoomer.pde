@@ -22,9 +22,11 @@ void setup() {
   //size(640, 360, P3D);
   fullScreen(P3D);
   colorMode(HSB);
+    frameRate(60f);
 
   image  = loadImage("face.png"); // Load the image
   setupCam();
+
   background(0);
 }
 

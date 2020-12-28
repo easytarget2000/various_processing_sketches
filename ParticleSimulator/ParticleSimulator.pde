@@ -28,6 +28,8 @@ void setup() {
   //size(1920, 1080);
   //fullScreen(); 
    fullScreen(2);
+       frameRate(60f);
+
   background(0);
 
   colorMode(HSB, 1f);

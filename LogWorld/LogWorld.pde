@@ -21,6 +21,7 @@ void setup() {
   // fullScreen();
    //fullScreen(P3D, 2);
   background(0);
+    frameRate(60f);
 
   setupCamera();
 }

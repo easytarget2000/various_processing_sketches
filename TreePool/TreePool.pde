@@ -21,6 +21,7 @@ void setup() {
    fullScreen();
    //fullScreen(2);
   background(0);
+    frameRate(60f);
 
   configurePaint();
   maxJitter = width / 8f;

@@ -5,6 +5,7 @@ int X=0;
 
 void setup() {
   size(640, 480);
+    frameRate(60f);
 
   String[] cameras = Capture.list();
 

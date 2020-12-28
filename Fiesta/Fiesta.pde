@@ -7,7 +7,8 @@ void setup() {
   colorMode(HSB, 360, 100, 100, 100);
   smooth();
   background(0, 0, 0);
-  
+    frameRate(60f);
+
   blendMode(LIGHTEST);
   hint(DISABLE_DEPTH_TEST);
 

@@ -26,6 +26,7 @@ void setup() {
   //size(1920, 1080, P3D);
   fullScreen(P3D);
   //size(1280, 720, P3D);
+  frameRate(60f);
 
   // fullScreen(2);
   background(0);

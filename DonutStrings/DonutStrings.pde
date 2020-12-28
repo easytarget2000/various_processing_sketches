@@ -15,6 +15,7 @@ private int numOfLinesPerStrand = 1200;
 void setup() {
   //size(750, 750, P3D);
   fullScreen(P3D);
+  frameRate(60f);
 
   smooth(8);  
   colorMode(HSB, 1f);

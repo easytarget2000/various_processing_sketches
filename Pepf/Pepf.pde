@@ -11,8 +11,9 @@ private String scanFileNamePrefix;
 private Capture cameraCapture;
 private PImage lastImage;
 private Mode mode = Mode.CAMERA;
-private int scanItemsPerRow = 6;
-private int scanItemsPerCol = 4;
+private int numOfReadsPerScan = 5;
+private int scanItemsPerRow = 32;
+private int scanItemsPerCol = 24;
 private int scanRow = 0;
 private int scanColumn = 0;
 private float[] luminanceValues;
@@ -21,10 +22,11 @@ void setup() {
   //size(1090, 600);
   fullScreen(2);
   colorMode(HSB, 1f, 1f, 1f, 1f);
+    frameRate(60f);
 
   initCameraCapture();
   background(0);
-  
+
   //final PImage testImage = loadImage("test-pink.jpg");
   //final float luminance = luminanceCalculator.imageLuminance(testImage);
   //println("testImage luminance:", luminance);
@@ -64,7 +66,7 @@ void keyPressed() {
 Implementations
  */
 
-private void initCameraCapture() {
+private void initCameraCapture() {  
   final String[] cameras = Capture.list();
   if (cameras.length == 0) {
     println("There are no cameras available for capture.");
@@ -82,6 +84,9 @@ private void initCameraCapture() {
 }
 
 private void initScanMode() {
+  background(0);
+  delay(512);
+  
   scanFileNamePrefix = String.valueOf((int) random(10000f));
   luminanceValues = new float[scanItemsPerRow * scanItemsPerCol];
   mode = Mode.SCAN;
@@ -128,32 +133,37 @@ private void drawScanItemAndAdvance() {
   fill(OVERLAY_COLOR);
   rect(scanItemX, scanItemY, scanItemWidth, scanItemHeight);
 
-  delay(DRAW_TO_READ_SCAN_DELAY_MILLIS);
+  float luminance = 0f;
+  for (int i = 0; i < numOfReadsPerScan; i++) { 
+    //delay(DRAW_TO_READ_SCAN_DELAY_MILLIS);
 
-  cameraCapture.read();
-  final PImage camImage = cameraCapture.copy();
-  final PImage blendImage = camImage.copy();
-  blendImage.blend(
-    lastImage, 
-    0, 
-    0, 
-    lastImage.width, 
-    lastImage.height, 
-    0, 
-    0, 
-    camImage.width, 
-    camImage.height, 
-    SUBTRACT
-    );
-  lastImage = camImage.copy();
+    cameraCapture.read();
+    //final PImage camImage = cameraCapture.copy();
+    //final PImage blendImage = camImage.copy();
+    //blendImage.blend(
+    //  lastImage, 
+    //  0, 
+    //  0, 
+    //  lastImage.width, 
+    //  lastImage.height, 
+    //  0, 
+    //  0, 
+    //  camImage.width, 
+    //  camImage.height, 
+    //  SUBTRACT
+    //  );
+    luminance += luminanceCalculator.imageLuminance(cameraCapture);
 
-  final float luminance = luminanceCalculator.imageLuminance(blendImage);
+    //lastImage = cameraCapture.copy();
+  }
+
+  luminance /= (float) numOfReadsPerScan;
   setScanluminanceValue(scanColumn, scanRow, luminance);
 
-  if (SAVE_SCAN_IMAGE_FILES) {
-    final String fileName = getScanFileName(scanColumn, scanRow, luminance);
-    blendImage.save(fileName);
-  }
+  //if (SAVE_SCAN_IMAGE_FILES) {
+  //  final String fileName = getScanFileName(scanColumn, scanRow, luminance);
+  //  blendImage.save(fileName);
+  //}
 
   if (++scanColumn >= scanItemsPerRow) {
     scanColumn = 0;
@@ -189,10 +199,12 @@ private void normalizeScanValues() {
   }
 
   for (int i = 0; i < luminanceValues.length; i++) {
-    luminanceValues[i] = norm(
+    luminanceValues[i] = map(
       luminanceValues[i], 
       lowestluminance, 
-      highestluminance
+      highestluminance, 
+      0.2f, 
+      1f
       );
   }
 

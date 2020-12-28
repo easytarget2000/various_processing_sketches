@@ -16,6 +16,8 @@ boolean[] edit;
 
 void setup()
 {
+      frameRate(60f);
+
   fullScreen(P3D);
   colorMode(HSB);
   background(0);

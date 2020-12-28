@@ -21,6 +21,9 @@ void setup() {
   smooth();
   initPolygonDriversEmpty();
   //initPolygonDriversFilling();
+  
+      frameRate(60f);
+
 }
 
 void draw() {

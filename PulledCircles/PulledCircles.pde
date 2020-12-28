@@ -19,6 +19,7 @@ void setup() {
   background(0);
   noFill();
   noCursor();
+    frameRate(60f);
 
   initCircles();
 }

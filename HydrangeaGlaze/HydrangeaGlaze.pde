@@ -44,6 +44,7 @@ private boolean swapColors;
 void setup() {
   size(1920, 1080, P3D);
   //fullScreen(P3D, 2);
+  frameRate(60f);
 
   colorMode(HSB, 1f, 1f, 1f, 1f);
   blendMode(SCREEN);

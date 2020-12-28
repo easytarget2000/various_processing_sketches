@@ -9,6 +9,8 @@ void setup() {
   fullScreen(P3D);
   smooth();
   background(0);
+    frameRate(60f);
+
   counts = new float[width*height];
 }
 

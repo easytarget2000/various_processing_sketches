@@ -4,6 +4,8 @@ void setup(){
   fullScreen(P3D);
   
   stroke(255);
+    frameRate(60f);
+
   fill(255);
   
   background(0);

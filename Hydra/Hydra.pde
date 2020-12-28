@@ -14,6 +14,7 @@ private float r = 128f;
 
 void setup() {
   size(1280, 1280);
+  frameRate(60f);
 
   r = height / 2f;
   // fullScreen();
